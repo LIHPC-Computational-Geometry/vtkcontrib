@@ -1,0 +1,387 @@
+Version 4.8.4 : 25/11/22
+===============
+
+Un peu de nettoyage (hors sources).
+
+
+Version 4.8.3 : 15/02/22
+===============
+
+src/VtkContrib/CMakeLists.txt : retouche gestion de dépendance à MPI en environnement non Ubuntu.
+
+
+Version 4.8.2 : 19/01/22
+===============
+
+Correctif cmake pour station Rhel_8__x86_64 : ajout libs intel emmenées par OMPI.
+src/VtkContrib/CMakeLists.txt : suppression balise OS_TAG
+
+
+Version 4.8.1 : 18/01/22
+===============
+
+vtkcontrib/src/VtkContrib/CMakeLists.txt : retouche suite problème de dépendance non résolu au runtime sur la libmpi
+(problème de path).
+
+
+Version 4.8.0 : 15/12/21
+===============
+
+Modification gestion MPI en cmake.
+Repose maintenant sur find_package (MPI) + variables MPI_C_HEADER_DIR et autres transmises à cmake).
+A faire : 
+- supprimer mpich.cmake  ompi.cmake
+- vtkcontrib/src/VtkContrib/CMakeLists.txt : supprimer toute trace de gestion de MPI
+- ANNOTATIONS : enlever cmake/mpich.cmake
+
+
+Version 4.7.4 : 02/12/21
+===============
+
+Retouches cmake, dépendances VTK dans VtkContribConfig.cmake généré (boguait sur Ubuntu, pb
+avec Could NOT find MPI_C ...).
+Arrêt dépendance vtkGUISupportQt.
+
+
+Version 4.7.3 : 03/11/21
+===============
+
+Retouches cmake.
+
+
+Version 4.7.2 : 29/10/21
+===============
+
+Retouches cmake.
+
+
+Version 4.7.1 : 26/10/21
+===============
+
+Portage VTK 9.1.0 rc2.
+
+
+Version 4.7.0 : 05/10/21
+===============
+
+Portage VTK 9.1.0 rc1.
+
+
+Version 4.6.3 : 10/09/21
+===============
+
+Suppression de mini gros-mots et de balises EXPURGE.
+
+
+Version 4.6.2 : 24/08/21
+===============
+
+Suppression des noms de services et laboratoires.
+
+
+Version 4.6.1 : 12/05/21
+===============
+
+Dépendance au composant vtk vtkGUISupportQt manquante, provider MPI spécifié en dur sur plateforme Rhel_8__x86_64
+
+
+Version 4.6.0 : 25/01/21 Révisions svn 243/244
+===============
+
+Portage VTK 9. Ajout du langage C au CMakeLists.txt racine pour VTK 9 car sinon il refuse de charger MPI_C demandé par ParallelMPI ...
+
+
+Version 4.5.9 : 11/01/21 Révisions svn 239/240
+===============
+
+Retouches cmake/ompi.cmake et VtkContrib/CMakeLists.txt pour portage Atos/VTK8/OMPI.
+
+
+Version 4.5.8 : 22/12/20 Révisions svn 237/238
+===============
+
+Retouche mineure CMakeLists.txt.
+
+
+Version 4.5.7 : 01/12/20 Révisions svn 235/236
+===============
+
+VTK_OPENGL_BACKEND positionné pour VTK 8
+Retouches CMakeLists.txt pour propagation du répertoire des entêtes de la souche MPI utilisée.
+
+
+Version 4.5.6 : 13/11/20
+===============
+
+Les MANDATORY_VTK_OPTIONS deviennent - pour partie - publiques => propagation des AUTOINIT.
+VTK_OPENGL_BACKEND positionné pour VTK 8
+
+
+Version 4.5.5 : 6/11/20 Révisions svn 233/234
+===============
+
+Ajout de la lib vtkCommonSystem à la liste des dépendances VTK v 7 backend GL.
+
+
+Version 4.5.4 : 04/09/20 Révisions svn 231/232
+===============
+
+v 0.8.0 de cmake/workarounds.cmake (LC_ALL=C)
+src/VtkContrib/CMakeLists.txt : vtkRenderingGL2PSOpenGL2 à la place de vtkRenderingGL2PS dans le cas du backend OpenGL2.
+src/VtkContrib/CMakeLists.txt : drapeau de compilation public -DVTK_OPENGL_BACKEND=\"${VTK_OPENGL_BACKEND}\"
+ATTENTION : en cas d'utilisation du backend OpenGL 2 penser dans le script de lancement de l'application à positionner
+la variable d'environnement VTK_USE_LEGACY_DEPTH_PEELING=1. En son absence il y a un risque important de rendu de très
+mauvaise qualité en cas d'usage de la transparence.
+
+
+Version 4.5.3 : Révisions svn 226/227
+===============
+
+- Ajout -DNDEBUG à la compilation en mode non debug.
+- Ajout dependance OMPI sur calculateur.
+- Actualisation des fichiers d'installation par scripting (build.sh, configurations/*).
+
+
+Version 4.5.2 : 10/06/20 Révisions svn 223/224
+===============
+
+Portage VTK 8, suite. Ajout dépendance vtkIOExport.
+
+
+Version 4.5.1 : 08/06/20 Révisions svn 216/217
+===============
+
+Petits correctifs pour import/export.
+cmake/common.cmake : ajout à CMAKE_CXX_FLAGS de la variable EXTRA_CXX_FLAGS éventuellement transmise en argument
+de cmake.
+
+
+Version 4.5.0 : 04/06/20 Révisions svn 214/215
+===============
+
+Fin réintégration en environnement CEA suite confinement covid-19.
+Procédure d'exportation ouverte des sources : cible export avec script export.sh (réalisation d'un tarball filtré,
+sans gros mots, reposant sur la commande expurge réalisée à cet effet et sur la commande tar).
+cmake/workaround.cmake utilise maintenant la commande lsb_release -d à la place du tandem uname/commande locale. A
+finaliser sur calculateur.
+
+
+Version 4.4.0 : 09/04/20
+===============
+
+Portage VTK 8.2.0.
+
+
+Version 4.3.0 : 07/04/20
+===============
+
+Portage backend OpenGL2 VTK 7.1.1.
+
+
+Version 4.2.0 : 04/04/20
+===============
+
+Déplacement des en-têtes dans le répertoire VtkContrib
+
+
+Version 4.1.0 : 18/03/20
+===============
+
+Passage du projet en UTF-8
+Portage g++ v 7.5.0
+
+
+Version 4.0.2 : 20/01/20 révision svn 205
+===============
+
+Script de génération de l'archive des sources, script create_tarball.sh.
+Fichier LISEZMOI.txt
+
+
+Version 4.0.0 : 18/12/19 (révisions svn 202/203)
+===============
+
+Portage CMake/Spack g++ 8.3/intel 18.0.3 (arrêt GSCC).
+
+
+Version 3.3.0 : déployée le 01/10/19 (révision svn 193/194)
+===============
+
+- TK_Variants v 4.10.0 (Variants Vtkgl1_711 et Vtlmesa1_711 à la place
+de Vtkgl711 et Vtkmesa711)
+
+
+- Correctif vtkTrihedron::vtkTrihedron : le label Z n'était pas affiché
+en VTK 7.
+- Classe vtk2dAxiDihedron (dièdre pour repères axisymétriques)
+- tests/trihedrons.cpp
+
+
+Version 3.2.1 : déployée le 25/07/19 (révision svn r181/182)
+===============
+
+- TK_Variants v 4.8.0
+
+- Correctif vtkConstrainedPointHandleRepresentation::WidgetInteraction : le
+widget pouvait ne plus être affiché bien que fonctionnel.
+
+
+Version 3.2.0 : déployée le 12/03/19 (révision svn r175/176)
+===============
+
+- TK_Variants v 4.7.0 (variant Vtkmesa711, arrêt RedHat_6_x86_64).
+
+
+Version 3.1.0 : déployée le 08/06/18 (révision svn r171/174)
+===============
+
+- TK_Variants v 4.1.0 (ECM_Variants v 1.22.0)
+Utilisation du scenario de déploiement VTK_LIBS.
+
+- Arrêt cible BullEL_6_AE__x86_64
+
+- Remplacement Vtk711 (backend Open GL 2) par Vtkgl711 (backend Open GL) qui
+présente l'avantage de ne pas poser de problème de compatibilité GL/X lorsque
+l'on passe d'une machine à l'autre.
+
+- Scenario de deploiement personnalisé.
+
+
+Version 3.0.0 : déployée le 04/05/18
+===============
+
+- TK_Variants v 4.0.0
+
+Correctif vtkConstrainedPointHandleRepresentation::WidgetInteraction.
+
+
+Version 2.23.0 : déployée le 17/11/17
+================
+
+- TK_Variants v 3.0.0 (ECM_Variants v 1.21.0 : portage RH 7,
+compilateurs gcc 6.2.0, icpc 17.0.4).
+
+- Support VTK v 7.1.1
+
+
+Version 2.22.0 : déployée le 22/05/17
+================
+
+- TK_Variants v 2.12.0
+
+- Classe vtkConstrainedPointWidget de positionnement interactif d'un point
+sur une grille non structurée.
+- Répertoire tests avec point_widget.cpp de test/illustration de la classe
+vtkConstrainedPointWidget.
+
+
+Version 2.21.0 : déployée le 09/03/17
+================
+
+- TK_Variants v 2.4.0
+
+- vtkTrihedron::SetLabel2D, SetLabelsOffsets : pouvoir permettre d'avoir 2
+trièdres superposés tout en séparant les libellés de leurs axes (confondus).
+
+
+Version 2.20.0 : 24/10/16
+================
+
+- TK_Variants v 1.79.0
+
+- vtkTrihedron::SetAxisThicknessScale, vtkTrihedron::Get*AxisArrowSource.
+- Les libellés des axes 2D ont une ombre.
+
+
+Version 2.19.0 : 14/10/16
+================
+
+- TK_Variants v 1.78.0
+
+- Classes vtkPropHelper, vtkLandmarkActor, vtkTrihedron.
+
+
+Version 2.18.0 : 04/01/16
+================
+
+- TK_Variants v 1.57.0
+
+
+Version 2.17.0 : 07/07/15
+================
+
+- TK_Variants v 1.52.0 (Portage Atos_7__x86_64)
+
+
+Version 2.16.0 : 16/04/15
+================
+
+- TK_Variants v 1.50.0
+
+- Classe vtkECMAxesActor.
+- Suppression classe vtkGL2PSExporter.
+
+
+Version 2.15.0 : 17/01/13
+================
+
+- TK_Variants v 1.24.0
+
+Republié le 13/06/13 avec les modifications suivantes :
+- Suppression vtkOutputPort/vtkInputPort
+- Variant Vtk5100ecm
+
+
+Version 2.14.0 : 06/12/12
+================
+
+- TK_Variants v 1.23.0 (QtUtil v 2.36.0, cible RedHat_6_x86_64).
+- Portage VTK 5.10.0, arrêt VTK 5.8.0.
+
+
+Version 2.13.0 : 24/11/11
+================
+
+- TK_Variants 1.20.0
+- Portage VTK 5.8.0
+
+
+Version 2.12.0 : 16/03/11
+================
+
+- TK_Variants 1.17.0
+
+
+Version 2.11.0 : 11/12/09
+================
+
+- TK_Variants 1.2.0
+- Actualisation de la documentation.
+
+
+Version 2.10.0 : 30/10/09
+================
+
+- Portage Fedora_11__x86_64, arret RH 5 32 bits et +-Nehalem.
+- Utilisation de ECM_variants.xml/TK_Variants.xml (variants systeme
+d'exploitation/compilateurs utilises).
+- Mise a jour icevtkcontrib.doxygen.
+- Utilisation variant Vtk510ecm sur calculateur.
+
+
+Version 2.9.0 : 14/09/09
+===============
+
+06/10/09 : deploiement plate-forme RHEL_4__x86_64.
+Portage sous GSCC.
+
+
+Version 2.8.1 : 07/04/08
+===============
+
+RAS
+
+Versions antérieures :
+======================
+
+Voir fichier versions.old.

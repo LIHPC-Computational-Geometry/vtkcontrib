@@ -1,0 +1,12 @@
+include(CMakeFindDependencyMacro)
+find_dependency (VTK)
+
+@PACKAGE_INIT@
+
+set (VtkContrib_VERSION @VTK_CONTRIB_VERSION@)
+set_and_check (VtkContrib_INCLUDE_DIR   "@PACKAGE_INCLUDE_INSTALL_DIR@")
+set_and_check (VtkContrib_LIB_DIR   "@PACKAGE_LIB_INSTALL_DIR@")
+check_required_components (VtkContrib)
+
+# Fournir l'accès aux services des cibles (fichier non inclus automatiquement) :
+include(${CMAKE_CURRENT_LIST_DIR}/VtkContribTargets.cmake)
