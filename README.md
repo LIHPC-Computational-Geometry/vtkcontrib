@@ -1,2 +1,2 @@
 # vtkcontrib
-Toolkit for projects using the [VTK](https://vtk.org/) library.
+Toolkit for projects using the [VTK library](https://vtk.org/).
