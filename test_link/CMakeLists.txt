@@ -3,11 +3,11 @@ project(test_link)
 
 set(CMAKE_CXX_STANDARD 14)
 
-find_package (PrefsQt REQUIRED)
+find_package (VtkContrib REQUIRED)
 
 add_executable(test_link main.cpp)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE PrefsQt::PrefsQt)
+target_link_libraries(${PROJECT_NAME} PRIVATE VtkContrib::VtkContrib)
 
 enable_testing()
 add_test(
