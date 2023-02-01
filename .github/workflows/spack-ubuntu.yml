@@ -13,3 +13,4 @@ jobs:
     uses: LIHPC-Computational-Geometry/lihpccg-ci/.github/workflows/spack-ubuntu.yml@main
     with:
       run-tests: false
+      cmake-options: "-DVTK_7:BOOL=ON -DUSE_OPENGL_BACKEND:BOOL=ON"

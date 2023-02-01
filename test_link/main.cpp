@@ -96,8 +96,11 @@ cout << "Cylinder center at (" << center [0] << ", " << center [1] << ", " << ce
 	dihedronCommand->SetTrihedron (dihedron);
 
 	// Affichage et main loop :
-	iren->Initialize ( );
-	renWin->Render ( );
+
+	// No start of graphical application during GitHub CI (just link test)
+	// iren->Initialize ( );
+	// renWin->Render ( );
+
 	theaterRenderer->SetBackground (1., 1., 1.);
 	renWin->SetSize (800, 800);
 	theaterRenderer->ResetCamera ( );
@@ -109,7 +112,9 @@ cout << "Cylinder center at (" << center [0] << ", " << center [1] << ", " << ce
 	dihedronCommand->SynchronizeViews (camera);
 	dihedronRenderer->ResetCamera ( );
 	dihedronRenderer->ResetCameraClippingRange ( );
-	renWin->Render ( );
+
+	// No start of graphical application during GitHub CI (just link test)
+	// renWin->Render ( );
 
     // No start of graphical application during GitHub CI (just link test)
 	// iren->Start ( );
