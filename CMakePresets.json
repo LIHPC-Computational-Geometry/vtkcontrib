@@ -1,0 +1,14 @@
+{
+    "version": 3,
+    "configurePresets": [
+      {
+        "name": "ci",
+        "cacheVariables": {
+          "VTK_7": "ON",
+          "DUSE_OPENGL_BACKEND": "ON",
+          "CMAKE_INSTALL_PREFIX": "$env{INSTALL_DIR}/VTK-7.1.1"
+        }
+      }
+    ]
+}
+  
