@@ -5,7 +5,7 @@
         "name": "ci",
         "cacheVariables": {
           "VTK_7": "ON",
-          "DUSE_OPENGL_BACKEND": "ON",
+          "USE_OPENGL_BACKEND": "ON",
           "CMAKE_PREFIX_PATH": "$env{INSTALL_DIR}/VTK-7.1.1"
         }
       }
