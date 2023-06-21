@@ -1,20 +1,27 @@
 set (CURRENT_PACKAGE_NAME "VtkContrib")
 set (CURRENT_PACKAGE_MACRO_NAME "VTK_CONTRIB")
 
+find_package (GUIToolkitsVariables)
+find_package (OpenGL)	# Pour Spack 0.18.1
+
 include (${CMAKE_SOURCE_DIR}/cmake/version.cmake)
-include (${CMAKE_SOURCE_DIR}/cmake/common.cmake)
-include (${CMAKE_SOURCE_DIR}/cmake/workarounds.cmake)
+include (${GUIToolkitsVariables_CMAKE_DIR}/common.cmake)
+include (${CMAKE_SOURCE_DIR}/cmake/vtkcontrib_common.cmake)
+include (${GUIToolkitsVariables_CMAKE_DIR}/workarounds.cmake)
 
 # Curieusement les dépendances semblent inexister avec cette version de VTK, ou ne sont pas bien prises en compte ...
 # => On ajoute MPI
 if (VTK_7)
+	if (MPI_mpi_LIBRARY)
+		set (VTK_PARALLEL_PACKAGES vtkParallelMPI vtkRenderingParallel vtkParallelCore)
+	endif (MPI_mpi_LIBRARY)
 	if (USE_OPENGL_BACKEND)
-		set (VTK_REQUIRED_PACKAGES vtkRenderingLOD vtkInteractionStyle vtkFiltersHybrid vtkFiltersExtraction vtkFiltersCore vtkCommonTransforms vtkCommonMath vtkInteractionWidgets vtkParallelMPI vtkRenderingParallel vtkParallelCore vtkImagingHybrid vtkRenderingOpenGL vtkRenderingFreeType vtkRenderingLabel vtkFiltersImaging vtkRenderingGL2PS vtkIOImage vtkIOLegacy vtkIOExportOpenGL vtkIOExport vtkIOXML vtkIOCore vtkCommonExecutionModel vtkCommonDataModel vtkRenderingAnnotation vtkFiltersSources vtkFiltersGeometry vtkFiltersGeneral vtkRenderingCore vtkCommonSystem vtkCommonCore vtkgl2ps vtkpng vtksys)
+		set (VTK_REQUIRED_PACKAGES vtkRenderingLOD vtkInteractionStyle vtkFiltersHybrid vtkFiltersExtraction vtkFiltersCore vtkCommonTransforms vtkCommonMath vtkInteractionWidgets vtkImagingHybrid vtkRenderingOpenGL vtkRenderingFreeType vtkRenderingLabel vtkFiltersImaging vtkRenderingGL2PS vtkIOImage vtkIOLegacy vtkIOExportOpenGL vtkIOExport vtkIOXML vtkIOCore vtkCommonExecutionModel vtkCommonDataModel vtkRenderingAnnotation vtkFiltersSources vtkFiltersGeometry vtkFiltersGeneral vtkRenderingCore vtkCommonSystem vtkCommonCore vtkgl2ps vtkpng vtksys)
 		set (VTK_OPENGL_BACKEND OpenGL)
 	else (USE_OPENGL_BACKEND)
 		set (VTK_REQUIRED_PACKAGES vtkRenderingLOD vtkInteractionStyle vtkFiltersHybrid vtkFiltersExtraction vtkFiltersCore #
-	                           vtkCommonTransforms vtkCommonMath vtkInteractionWidgets vtkParallelMPI vtkRenderingParallel #
-	                           vtkParallelCore vtkImagingHybrid vtkRenderingOpenGL2 vtkRenderingFreeType vtkRenderingLabel #
+	                           vtkCommonTransforms vtkCommonMath vtkInteractionWidgets #
+	                           vtkImagingHybrid vtkRenderingOpenGL2 vtkRenderingFreeType vtkRenderingLabel #
 	                           vtkFiltersImaging vtkRenderingGL2PSOpenGL2 vtkIOImage vtkIOLegacy vtkIOExportOpenGL2 vtkIOExport #
 	                           vtkIOXML vtkIOCore vtkCommonExecutionModel vtkCommonDataModel vtkRenderingAnnotation vtkFiltersSources #
 	                           vtkFiltersGeometry vtkFiltersGeneral vtkRenderingCore vtkCommonCore vtkgl2ps vtkpng vtksys #
@@ -24,26 +31,37 @@ if (VTK_7)
 		set (VTK_OPENGL_BACKEND OpenGL2)
 	endif (USE_OPENGL_BACKEND)
 	find_package (VTK 7.1 REQUIRED COMPONENTS ${VTK_REQUIRED_PACKAGES})
-	set (VTK_LIB_DEPENDENCIES ${VTK_REQUIRED_PACKAGES})
+	set (VTK_LIB_DEPENDENCIES ${VTK_PARALLEL_PACKAGES} ${VTK_REQUIRED_PACKAGES})
 	set (VTK_INC_DEPENDENCIES ${VTK_INCLUDE_DIRS})
 	# Suite pb sur une plateforme :
 	if (MPI_mpi_LIBRARY)
 		set (VTK_LIB_DEPENDENCIES "${VTK_LIB_DEPENDENCIES};${MPI_mpi_LIBRARY}")
 	endif (MPI_mpi_LIBRARY)	# if (MPI_mpi_LIBRARY)
 elseif (VTK_8)
-	set (VTK_REQUIRED_PACKAGES vtkParallelMPI vtkParallelCore vtkRenderingParallel vtkIOExport vtkIOImage vtkInteractionWidgets vtkRenderingOpenGL2)
-	find_package (VTK 8 REQUIRED COMPONENTS ${VTK_REQUIRED_PACKAGES})
+	if (MPI_mpi_LIBRARY)
+		set (VTK_PARALLEL_PACKAGES vtkParallelCore vtkRenderingParallel)
+	endif (MPI_mpi_LIBRARY)
+	set (VTK_REQUIRED_PACKAGES vtkIOExport vtkIOImage vtkInteractionWidgets vtkRenderingOpenGL2)
+	find_package (VTK 8 REQUIRED COMPONENTS ${VTK_PARALLEL_PACKAGES} ${VTK_REQUIRED_PACKAGES})
 	include(${VTK_USE_FILE})	# From Examples/GUI/Qt/ImageViewer/CMakeLists.txt
 	set (VTK_LIB_DEPENDENCIES ${VTK_LIBRARIES})
 	set (VTK_INC_DEPENDENCIES)	# Empty, not usefull with VTK 8
 	set (VTK_OPENGL_BACKEND OpenGL2)
 elseif (VTK_9)
 	message (STATUS "========================================= UTILISATION DE VTK 9 =========================================")
-	set (VTK_REQUIRED_PACKAGES ParallelMPI IOMPIParallel IOParallel ParallelCore ParallelMPI IOExport IOImage InteractionWidgets RenderingOpenGL2)
-	find_package (VTK 9 REQUIRED COMPONENTS ${VTK_REQUIRED_PACKAGES})
+	if (MPI_mpi_LIBRARY)
+		set (VTK_PARALLEL_PACKAGES ParallelMPI IOParallel ParallelCore)
+	endif (MPI_mpi_LIBRARY)
+	set (VTK_REQUIRED_PACKAGES  ImagingHybrid ImagingCore IOExport IOImage InteractionWidgets RenderingOpenGL2)
+	find_package (VTK 9 REQUIRED COMPONENTS ${VTK_PARALLEL_PACKAGES} ${VTK_REQUIRED_PACKAGES})
 	set (VTK_LIB_DEPENDENCIES ${VTK_LIBRARIES})
 	set (VTK_INC_DEPENDENCIES)	# Empty, not usefull with VTK 9
 	set (VTK_OPENGL_BACKEND OpenGL2)
+	if (MPI_mpi_LIBRARY)
+		set (VTK_LIB_DEPENDENCIES "${VTK_LIB_DEPENDENCIES};${MPI_mpi_LIBRARY}")
+	endif (MPI_mpi_LIBRARY)	# if (MPI_mpi_LIBRARY)
+else (VTK_9)
+	message (FATAL_ERROR "==> UTILISEZ -DVTK_7:BOOL=ON OU -DVTK_8:BOOL=ON OU -DVTK_9:BOOL=ON A LA LIGNE DE COMMANDE")
 endif (VTK_7)	
 
 find_package (MPI)
@@ -77,12 +95,11 @@ if (VTK_MPI_LDFLAGS)
 	target_link_options (VtkContrib PUBLIC ${VTK_MPI_LDFLAGS})
 endif (VTK_MPI_LDFLAGS)
 target_link_libraries (VtkContrib PUBLIC ${VTK_LIB_DEPENDENCIES} ${VTK_MPI_LIBS})
+target_link_libraries (VtkContrib PUBLIC OpenGL::GL)	# Pour Spack 0.18.1
 
 
 # ============================================= ATTENTION : ZONE SENSIBLE ==============================================
 # On gère ici toute la misère du monde ...
-# EXPURGE_BEGINNING_TAG	OMPI_CALC
-# EXPURGE_COMPLETION_TAG	
 if (NOT ${PLATFORM} STREQUAL "Ubuntu")
 	if (VTK_MPI_LIB_DIR)
 		target_link_directories (VtkContrib PUBLIC "${VTK_MPI_LIB_DIR}")	# Probablement à revoir par la suite car entraîné par VTK
