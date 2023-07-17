@@ -1,5 +1,7 @@
 include(CMakeFindDependencyMacro)
+find_dependency (GUIToolkitsVariables)
 find_dependency (VTK)
+find_dependency (OpenGL)	# Pour Spack 0.18.1
 
 @PACKAGE_INIT@
 
@@ -7,6 +9,10 @@ set (VtkContrib_VERSION @VTK_CONTRIB_VERSION@)
 set_and_check (VtkContrib_INCLUDE_DIR   "@PACKAGE_INCLUDE_INSTALL_DIR@")
 set_and_check (VtkContrib_LIB_DIR   "@PACKAGE_LIB_INSTALL_DIR@")
 check_required_components (VtkContrib)
-
+set (VTK_7 "@VTK_7@")
+set (VTK_8 "@VTK_8@")
+set (VTK_9 "@VTK_9@")
+set (USE_OPENGL_BACKEND "@USE_OPENGL_BACKEND@")
+set (QVTK_WIDGET  "@QVTK_WIDGET@")
 # Fournir l'accès aux services des cibles (fichier non inclus automatiquement) :
 include(${CMAKE_CURRENT_LIST_DIR}/VtkContribTargets.cmake)

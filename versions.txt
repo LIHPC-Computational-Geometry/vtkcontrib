@@ -1,7 +1,69 @@
-Version 4.8.4 : 25/11/22
+Version 5.4.0 : 21/06/23
 ===============
 
-Un peu de nettoyage (hors sources).
+Sortie du projet GUIToolkits.
+
+
+Version 5.3.2 : 06/06/23
+===============
+
+Retouches cmake (dépendance GUIToolkitsVariables pour les dépendances).
+
+
+Version 5.3.1 : 21/04/23
+===============
+
+Retouches cmake (dépendance OpenGL) pour Spack 0.18.1
+Retouches cmake (support parallélisme / dépendance MPI).
+
+
+Version 5.3.0 : 31/03/23
+===============
+
+Portage GitHub environnement podman/spack/tests CI.
+Correctif propagation de USE_OPENGL_BACKEND et QVTK_WIDGET.
+ 
+ 
+Version 5.2.0 : 14/02/23
+===============
+
+Détection de la version de VTK utilisée et propagation des variables cmake VTK_7, VTK_8 et VTK_9.
+
+
+Version 5.1.1 : 03/02/23
+===============
+
+Retouches cmake : blindage pour cas non gérés (versions/options VTK).
+
+
+Version 5.1.0 : 17/01/23
+===============
+
+Retouches cmake/vtkcontrib_common.cmake : suppression -DMULTITHREADED_APPLICATION, ajout -DVTKGL
+
+
+Version 5.0.0 : 10/01/23
+===============
+
+Intégration au projet GUIToolkits.
+
+
+Version 4.10.1 : 25/11/22
+===============
+
+Suppression répertoire module.
+
+
+Version 4.10.0 : 11/11/22
+===============
+
+Classe vtkImplicitTorus : tore par défaut le long de l'axe Oz.
+
+
+Version 4.9.0 : 07/11/22
+===============
+
+Classe vtkImplicitTorus + example.
 
 
 Version 4.8.3 : 15/02/22
@@ -70,7 +132,7 @@ Portage VTK 9.1.0 rc1.
 Version 4.6.3 : 10/09/21
 ===============
 
-Suppression de mini gros-mots et de balises EXPURGE.
+Divers nettoyage.
 
 
 Version 4.6.2 : 24/08/21
@@ -160,8 +222,7 @@ Version 4.5.0 : 04/06/20 Révisions svn 214/215
 ===============
 
 Fin réintégration en environnement CEA suite confinement covid-19.
-Procédure d'exportation ouverte des sources : cible export avec script export.sh (réalisation d'un tarball filtré,
-sans gros mots, reposant sur la commande expurge réalisée à cet effet et sur la commande tar).
+Procédure d'exportation ouverte des sources : cible export avec script export.sh.
 cmake/workaround.cmake utilise maintenant la commande lsb_release -d à la place du tandem uname/commande locale. A
 finaliser sur calculateur.
 
