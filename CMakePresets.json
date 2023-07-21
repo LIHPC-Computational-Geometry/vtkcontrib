@@ -6,6 +6,7 @@
         "cacheVariables": {
           "VTK_7": "ON",
           "USE_OPENGL_BACKEND": "ON",
+          "GUIToolkitsVariables_ROOT": "$env{INSTALL_DIR}/guitoolkitsvariables",
           "VTK_ROOT": "$env{INSTALL_DIR}/VTK-7.1.1"
         }
       }
