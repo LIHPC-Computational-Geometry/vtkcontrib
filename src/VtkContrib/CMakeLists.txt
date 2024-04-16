@@ -52,7 +52,7 @@ elseif (VTK_9)
 	if (MPI_mpi_LIBRARY)
 		set (VTK_PARALLEL_PACKAGES ParallelMPI IOParallel ParallelCore)
 	endif (MPI_mpi_LIBRARY)
-	set (VTK_REQUIRED_PACKAGES  ImagingHybrid ImagingCore IOExport IOImage InteractionWidgets RenderingOpenGL2)
+	set (VTK_REQUIRED_PACKAGES  ImagingHybrid ImagingCore IOExport IOImage InteractionWidgets FiltersGeometry InteractionStyle RenderingOpenGL2 RenderingAnnotation)
 	find_package (VTK 9 REQUIRED COMPONENTS ${VTK_PARALLEL_PACKAGES} ${VTK_REQUIRED_PACKAGES})
 	set (VTK_LIB_DEPENDENCIES ${VTK_LIBRARIES})
 	set (VTK_INC_DEPENDENCIES)	# Empty, not usefull with VTK 9
