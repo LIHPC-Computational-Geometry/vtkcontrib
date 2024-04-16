@@ -1,3 +1,15 @@
+Version 5.4.2 :
+===============
+
+Retouche dépendances cmake en VTK 9.
+
+
+Version 5.4.1 : 11/08/23
+===============
+
+Sortie du projet GUIToolkits. Correctif cmake.
+
+
 Version 5.4.0 : 21/06/23
 ===============
 
