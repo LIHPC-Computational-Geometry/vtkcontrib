@@ -64,7 +64,9 @@ else (VTK_9)
 	message (FATAL_ERROR "==> UTILISEZ -DVTK_7:BOOL=ON OU -DVTK_8:BOOL=ON OU -DVTK_9:BOOL=ON A LA LIGNE DE COMMANDE")
 endif (VTK_7)	
 
-find_package (MPI)
+if (MPI_mpi_LIBRARY)
+	find_package (MPI)
+endif (MPI_mpi_LIBRARY)
 
 file (GLOB HEADERS public/${CURRENT_PACKAGE_NAME}/*.h)
 file (GLOB CPP_SOURCES *.cpp)
