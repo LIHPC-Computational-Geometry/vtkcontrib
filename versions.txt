@@ -1,3 +1,9 @@
+Version 5.6.0 : 05/07/24
+===============
+
+La classe vtkConstrainedPointWidget2 permet d'afficher l'éventuel axe de contrainte utilisé.
+
+
 Version 5.5.0 : 26/06/24
 ===============
 
