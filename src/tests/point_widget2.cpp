@@ -85,6 +85,7 @@ int main ( int argc, char *argv[] )
 	double	bounds [6]	= { 0., 2., -1., 1., -1., 1. };
 	vtkSmartPointer<vtkConstrainedPointWidget2> handleWidget = vtkSmartPointer<vtkConstrainedPointWidget2>::New();
 	handleWidget->GetRepresentation ( );
+	handleWidget->GetConstrainedPointRepresentation ( )->DisplayConstraintAxis (true);
 	handleWidget->SetInteractor(iren);
 //	handleWidget->GetRepresentation ( )->SetPlaceFactor (2.5);
 	handleWidget->GetRepresentation ( )->SetPlaceFactor (1.);

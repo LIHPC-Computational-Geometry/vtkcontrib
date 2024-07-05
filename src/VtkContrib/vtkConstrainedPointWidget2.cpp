@@ -1,7 +1,10 @@
 #include "VtkContrib/vtkConstrainedPointWidget2.h"
 
 #include <vtkCellPicker.h>
+#include <vtkLineSource.h>
+#include <vtkPolyDataMapper.h>
 #include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
 
 #include <assert.h>
@@ -66,7 +69,7 @@ vtkConstrainedPointHandleRepresentation2* vtkConstrainedPointWidget2::GetConstra
 void vtkConstrainedPointWidget2::OnChar ( )
 {
 	if ((0 != this->Interactor) && (0 != GetConstrainedPointRepresentation ( )))
-	{
+	{	    
 		switch (this->Interactor->GetKeyCode ( ))
 		{
 			case ' '	: GetConstrainedPointRepresentation ( )->SetConstraintAxis (-1);	break;
@@ -82,18 +85,27 @@ void vtkConstrainedPointWidget2::OnChar ( )
 }	// vtkConstrainedPointWidget2::OnChar
 
 
+void vtkConstrainedPointWidget2::EndInteraction ( )
+{
+	if (0 != GetConstrainedPointRepresentation ( ))
+		GetConstrainedPointRepresentation ( )->SetConstraintAxis (-1);
+		
+	vtkHandleWidget::EndInteraction ( );
+}	// vtkConstrainedPointWidget2::EndInteraction
+
+
 // =============================================================================
 //              LA CLASSE vtkConstrainedPointHandleRepresentation2
 // =============================================================================
 
 vtkConstrainedPointHandleRepresentation2::vtkConstrainedPointHandleRepresentation2 ( )
-	: vtkSphereHandleRepresentation ( )
+	: vtkSphereHandleRepresentation ( ), _displayConstraintAxis (false), _constraintAxisActor (0)
 {
 }	// vtkConstrainedPointHandleRepresentation2::vtkConstrainedPointHandleRepresentation2
 
 
 vtkConstrainedPointHandleRepresentation2::vtkConstrainedPointHandleRepresentation2 (const vtkConstrainedPointHandleRepresentation2&)
-	: vtkSphereHandleRepresentation ( )
+	: vtkSphereHandleRepresentation ( ), _displayConstraintAxis (false), _constraintAxisActor (0)
 {
 	assert (0 && "vtkConstrainedPointHandleRepresentation2 copy constructor is not allowed.");
 }	// vtkConstrainedPointHandleRepresentation2::vtkConstrainedPointHandleRepresentation2
@@ -108,6 +120,7 @@ vtkConstrainedPointHandleRepresentation2& vtkConstrainedPointHandleRepresentatio
 
 vtkConstrainedPointHandleRepresentation2::~vtkConstrainedPointHandleRepresentation2 ( )
 {
+	
 }	// vtkConstrainedPointHandleRepresentation2::~vtkConstrainedPointHandleRepresentation2
 
 
@@ -159,6 +172,10 @@ void vtkConstrainedPointHandleRepresentation2::WidgetInteraction (double eventPo
 
 void vtkConstrainedPointHandleRepresentation2::SetConstraintAxis (int axis)
 {
+	const	bool	displayConstraintAxis	= _displayConstraintAxis;
+	if ((0 != GetConstrained ( )) && (axis != this->ConstraintAxis))
+		DisplayConstraintAxis (false);
+		
 	this->ConstraintAxis	= axis;
 	switch (axis)
 	{
@@ -170,6 +187,77 @@ void vtkConstrainedPointHandleRepresentation2::SetConstraintAxis (int axis)
 		default	:
 			ConstrainedOff ( );
 	}	// switch (axis)
+	
+	if (true == displayConstraintAxis)
+		DisplayConstraintAxis (true);
 }	// vtkConstrainedPointHandleRepresentation2::SetConstraintAxis
 
 
+void vtkConstrainedPointHandleRepresentation2::DisplayConstraintAxis (bool onOff)
+{
+	if ((true == onOff) && (0 != _constraintAxisActor))
+		return;
+	_displayConstraintAxis	= onOff;
+	
+	if ((true == onOff) && (0 <= this->ConstraintAxis) && (2 >= this->ConstraintAxis))
+	{
+		// Le point courrant :
+		double	pos [3]	= { 0., 0., 0. };
+		GetWorldPosition (pos);
+		
+		// L'univers :
+		double	bounds [6]	= { DBL_MAX, -DBL_MAX, DBL_MAX, -DBL_MAX, DBL_MAX, -DBL_MAX };
+		double	dx			= 0., dy	= 0., dz	= 0.;
+		if (0 != this->Renderer)
+		{
+			this->Renderer->ComputeVisiblePropBounds (bounds);
+			dx	= bounds [1] - bounds [0];
+			dy	= bounds [3] - bounds [2];
+			dz	= bounds [5] - bounds [4];
+		}	// if (0 != this->Renderer)
+
+		vtkLineSource*	line	= vtkLineSource::New ( );
+		vtkPoints*		points	= vtkPoints::New ( );
+		points->Initialize ( );
+		switch (this->ConstraintAxis)
+		{
+			case 0	:
+				line->SetPoint1 (bounds [0] - dx, pos [1], pos [2]);
+				line->SetPoint2 (bounds [1] + dx, pos [1], pos [2]);
+				break;
+			case 1	:
+				line->SetPoint1 (pos [0], bounds [2] - dy, pos [2]);
+				line->SetPoint2 (pos [0], bounds [3] + dy, pos [2]);
+				break;
+			case 2	:
+				line->SetPoint1 (pos [0], pos [1], bounds [4] - dz);
+				line->SetPoint2 (pos [0], pos [1], bounds [5] + dz);
+				break;
+		}	// switch (this->ConstraintAxis)
+		vtkPolyDataMapper*	mapper	= vtkPolyDataMapper::New ( );
+		mapper->SetInputConnection (line->GetOutputPort ( ));
+		mapper->ScalarVisibilityOff ( );
+		assert (0 == _constraintAxisActor);
+		_constraintAxisActor	= vtkActor::New ( );
+		_constraintAxisActor->SetProperty (this->GetSelectedProperty ( ));	// => couleur de la sphère lors des interactions
+		_constraintAxisActor->SetMapper (mapper);
+		if (0 != this->Renderer)
+		{
+			this->Renderer->AddActor (_constraintAxisActor);
+			if (0 != this->Renderer->GetRenderWindow ( ))
+				this->Renderer->GetRenderWindow ( )->Render ( );
+		}
+		line->Delete ( );
+		mapper->Delete ( );
+	}	// if ((true == onOff) && (0 <= this->ConstraintAxis) && (2 >= this->ConstraintAxis))
+	else
+	{
+		if (0 != _constraintAxisActor)
+		{
+			if (0 != this->Renderer)
+				this->Renderer->RemoveActor (_constraintAxisActor);
+			_constraintAxisActor->Delete ( );
+		}	// if (0 != _constraintAxisActor)
+		_constraintAxisActor	= 0;
+	}	// else if ((true == onOff) && (0 <= this->ConstraintAxis) && (2 >= this->ConstraintAxis))
+}	// vtkConstrainedPointHandleRepresentation2::DisplayConstraintAxis

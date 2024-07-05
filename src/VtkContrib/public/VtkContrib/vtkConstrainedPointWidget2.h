@@ -7,6 +7,7 @@
 #ifndef VTK_CONSTRAINED_POINT_WIDGET_2_H
 #define VTK_CONSTRAINED_POINT_WIDGET_2_H
 
+#include <vtkActor.h>
 #include <vtkHandleWidget.h>
 #include <vtkSphereHandleRepresentation.h>
 
@@ -47,6 +48,14 @@ class vtkConstrainedPointWidget2 : public vtkHandleWidget
 	 * Modifie l'axe de contrainte de déplacement.
 	 */
 	virtual void OnChar ( );
+ 
+ 
+	protected :
+	
+	/**
+	 * Masque l'éventuel axe de contrainte affiché.
+	 */
+	virtual void EndInteraction ( );
  
 
 	private :
@@ -96,6 +105,13 @@ class vtkConstrainedPointHandleRepresentation2 : public vtkSphereHandleRepresent
 	 * @param	Nouvel axe de contrainte de déplacement (0 -> X, 1 -> Y, 2 -> Z, autre => déplacement dans le plan de l'écran).
 	 */
 	virtual void SetConstraintAxis (int axis);
+	
+	/**
+	 * Affiche/Masque une droite représentant l'axe de contrainte.
+	 */
+	virtual void DisplayConstraintAxis (bool onOff);
+	virtual bool DisplayConstraintAxis ( )
+	{ return _displayConstraintAxis; }
 
 
 	private :
@@ -115,6 +131,12 @@ class vtkConstrainedPointHandleRepresentation2 : public vtkSphereHandleRepresent
 	 */
 	vtkConstrainedPointHandleRepresentation2 (const vtkConstrainedPointHandleRepresentation2&);
 	vtkConstrainedPointHandleRepresentation2& operator = (const vtkConstrainedPointHandleRepresentation2&);
+
+	/** Faut-il afficher l'axe de contrainte ? */
+	bool						_displayConstraintAxis;
+
+	/** L'éventuel acteur représentant l'axe de contrainte. */
+	vtkActor*					_constraintAxisActor;
 };	// class vtkConstrainedPointHandleRepresentation2
 
 
