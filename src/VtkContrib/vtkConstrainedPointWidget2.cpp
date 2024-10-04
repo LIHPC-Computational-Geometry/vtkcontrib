@@ -146,7 +146,9 @@ void vtkConstrainedPointHandleRepresentation2::WidgetInteraction (double eventPo
 	{
 		if (!this->WaitingForMotion || this->WaitCount++ > 3)
 		{
+#ifdef VTK_7
 			this->ConstraintAxis = this->DetermineConstraintAxis (this->ConstraintAxis, pickPoint);
+#endif	// VTK_7
 			if (this->InteractionState == vtkHandleRepresentation::Selecting && !this->TranslationMode)
 			{
 				this->MoveFocus(prevPickPoint, pickPoint);
