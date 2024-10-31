@@ -9,7 +9,7 @@ if (VTK_7)
 	message (STATUS "========================================= UTILISATION DE VTK 7 =========================================")
 	if (USE_OPENGL_BACKEND)
 		set (MANDATORY_CXX_OPTIONS -DVTKGL -DUSE_OPENGL_BACKEND -DVTK_7)	# Public
-		set (MANDATORY_VTK_OPTIONS "-DvtkRenderingCore_AUTOINIT=3(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingOpenGL)" "-DvtkIOExport_AUTOINIT=1(vtkIOExportOpenGL)")
+		set (MANDATORY_VTK_OPTIONS "-DvtkRenderingCore_AUTOINIT=3(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingOpenGL)")
 	else (USE_OPENGL_BACKEND)
 		set (MANDATORY_CXX_OPTIONS -DVTKGL -DUSE_OPENGL2_BACKEND -DVTK_7)	# Public
 		set (MANDATORY_VTK_OPTIONS "-DvtkRenderingCore_AUTOINIT=3(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingOpenGL2)" "-DvtkIOExport_AUTOINIT=1(vtkIOExportOpenGL2)")

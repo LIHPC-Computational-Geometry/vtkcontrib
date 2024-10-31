@@ -1,3 +1,9 @@
+Version 5.7.0 : 29/10/24
+===============
+
+Suppression des dépendances à vtkIOExportOpenGL en VTK 7.
+
+
 Version 5.6.1 : 21/09/24
 ===============
 
