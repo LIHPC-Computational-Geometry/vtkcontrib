@@ -6,6 +6,7 @@
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
+#include <vtkWidgetEventTranslator.h>
 
 #include <assert.h>
 #include <iostream>
@@ -19,6 +20,13 @@ using namespace std;
 vtkConstrainedPointWidget2::vtkConstrainedPointWidget2 ( )
 	: vtkHandleWidget ( )
 {
+	if (0 != GetEventTranslator ( ))
+	{
+		GetEventTranslator ( )->RemoveTranslation (vtkCommand::MiddleButtonPressEvent);
+		GetEventTranslator ( )->RemoveTranslation (vtkCommand::MiddleButtonReleaseEvent);
+		GetEventTranslator ( )->RemoveTranslation (vtkCommand::RightButtonPressEvent);
+		GetEventTranslator ( )->RemoveTranslation (vtkCommand::RightButtonReleaseEvent);
+	}	// if (0 != GetEventTranslator ( ))
 }	// vtkConstrainedPointWidget2::vtkConstrainedPointWidget2
 
 

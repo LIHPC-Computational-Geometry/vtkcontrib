@@ -62,6 +62,7 @@ class vtkConstrainedPointWidget2 : public vtkHandleWidget
 
 	/**
 	 * Constructeur. S'associe une instance de vtkConstrainedPointHandleRepresentation2 pour représenter le point et effectuer son positionnement.
+	 * @warning		Désactivation des évènements sur les boutons du milieu et droit.
 	 */
 	vtkConstrainedPointWidget2 ( );
 
@@ -100,7 +101,7 @@ class vtkConstrainedPointHandleRepresentation2 : public vtkSphereHandleRepresent
 	 * Versions simplifiées de la gestion interactive de la saisie.
 	 */
 	virtual void WidgetInteraction (double eventPos [2]);
-
+	
 	/**
 	 * @param	Nouvel axe de contrainte de déplacement (0 -> X, 1 -> Y, 2 -> Z, autre => déplacement dans le plan de l'écran).
 	 */
