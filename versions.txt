@@ -1,3 +1,13 @@
+Version 5.7.1 : 14/01/25
+===============
+
+Correction de bogue vtkConstrainedPointWidget2 (issue Magix3D #166): désactivation des évènements sur les boutons du milieu et droit. En 
+l'absence de cette désactivation, en mode de sélection contraint sur un axe (x, y ou z), un clic milieu ou droit provoquait l'arrêt de 
+l'interaction mais pas l'arrêt d'affichage de l'axe (mauvais mapping évènement/action ?).
+Ce choix de désactivation a été fait car il y avait un changement de logique, on passait d'un déplacement contraint d'un point à un
+redimensionnement (non effectué).
+
+
 Version 5.7.0 : 29/10/24
 ===============
 
