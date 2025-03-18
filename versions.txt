@@ -1,3 +1,10 @@
+Version 5.8.0 : 04/03/25
+===============
+
+Classe vtkViewCubeActor. Cette classe permet d'orienter une vue 3D en cliquant sur ses 26 faces. A chaque clic la camera est 
+positionnée de manière à être normale à la face cliquée.
+
+
 Version 5.7.1 : 14/01/25
 ===============
 
