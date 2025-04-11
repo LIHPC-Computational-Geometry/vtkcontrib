@@ -8,6 +8,7 @@
 
 #include <vtkPropAssembly.h>
 #include <vtkActor.h>
+#include <vtkDoubleArray.h>
 #include <vtkPolyData.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkCellPicker.h>
@@ -117,12 +118,18 @@ class vtkViewCubeActor : public vtkPropAssembly
 	/** Le picking sur les faces du ViewCube. */
 	vtkSmartPointer<vtkCellPicker>		CellPicker;
 
+	/** La dernière face pickée. */
+	unsigned char						LastPickedFace;
+
 	/** Les labels. */
 	vtkSmartPointer<vtkVectorText>		XPlusVectorText, XMinusVectorText, YPlusVectorText, YMinusVectorText, ZPlusVectorText, ZMinusVectorText;
 	vtkSmartPointer<vtkActor>			XPlusActor, XMinusActor, YPlusActor, YMinusActor, ZPlusActor, ZMinusActor;
 
+	/** Les vecteurs "orientation vers le haut". */
+	vtkSmartPointer<vtkDoubleArray>		ViewUpVectors;
+	
 	/** L'éventuelle transformation utilisateur. */
-	vtkTransform	*Transform;
+	vtkTransform						*Transform;
 };	// class vtkViewCubeActor
 
 

@@ -2,6 +2,7 @@
 #include "VtkContrib/vtkFloatingPointType.h"
 #include "VtkContrib/vtkTrihedron.h"
 
+#include <vtkCellData.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkPolyData.h>
 #include <vtkProperty.h>
@@ -99,18 +100,22 @@ void vtkViewCubeActorPickCallback::Execute (vtkObject* caller, unsigned long eve
 // ====================================== LA CLASSE vtkViewCubeActor ====================================== 
 
 vtkViewCubeActor::vtkViewCubeActor ( )
-	: vtkPropAssembly ( ), Renderer (0), DrivenRenderer (0), CubePolyData ( ), CubeActor ( ), CubePolyDataMapper ( ), CellPicker ( ),
+	: vtkPropAssembly ( ), Renderer (0), DrivenRenderer (0), CubePolyData ( ), CubeActor ( ), CubePolyDataMapper ( ), CellPicker ( ), LastPickedFace ((unsigned char)-1),
 	  XPlusVectorText ( ), XMinusVectorText ( ), YPlusVectorText ( ), YMinusVectorText ( ), ZPlusVectorText ( ), ZMinusVectorText ( ), 
-	  XPlusActor ( ), XMinusActor ( ), YPlusActor ( ), YMinusActor ( ), ZPlusActor ( ), ZMinusActor ( ),
+	  XPlusActor ( ), XMinusActor ( ), YPlusActor ( ), YMinusActor ( ), ZPlusActor ( ), ZMinusActor ( ), ViewUpVectors ( ),
 	  Transform (0)
 {
 	CubePolyData		= vtkSmartPointer<vtkPolyData>::New ( );
 	CubeActor			= vtkSmartPointer<vtkActor>::New ( );
 	CubePolyDataMapper	= vtkSmartPointer<vtkPolyDataMapper>::New ( );
 	assert (0 != CubePolyData.Get ( ));
+	assert (0 != CubePolyData->GetCellData ( ));
 	assert (0 != CubeActor.Get ( ));
 	assert (0 != CubePolyDataMapper.Get ( ));
 	CubePolyData->Initialize ( );
+	ViewUpVectors		= vtkSmartPointer<vtkDoubleArray>::New ( );
+	ViewUpVectors->SetName ("ViewUp");
+	ViewUpVectors->SetNumberOfComponents (3);
 	vtkSmartPointer<vtkPoints>	points	= vtkSmartPointer<vtkPoints>::New ( );
 	assert (0 != points.Get ( ));
 	points->SetNumberOfPoints (24);
@@ -161,44 +166,61 @@ vtkViewCubeActor::vtkViewCubeActor ( )
 	cellArray->Initialize ( );
 	idsArray->Initialize ( );
 	idsArray->SetNumberOfValues (5 * 6 + 5 * 12 + 4 * 8);	// Faces + jonctions quads + triangles
+	CubePolyData->GetCellData ( )->SetVectors (ViewUpVectors);
 	vtkIdType*	cellsPtr	= idsArray->GetPointer (0);
 	size_t		pos			= 0;
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 0;	cellsPtr [pos++]	= 1; cellsPtr [pos++]	= 2; cellsPtr [pos++]	= 3;	// Bas
+	ViewUpVectors->InsertNextTuple3 (0., 0., 1.);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 5; cellsPtr [pos++]	= 6; cellsPtr [pos++]	= 7;	// Droite
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 8;	cellsPtr [pos++]	= 9; cellsPtr [pos++]	= 10; cellsPtr [pos++]	= 11;	// Haut
+	ViewUpVectors->InsertNextTuple3 (0., 0., 1.);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 15;	cellsPtr [pos++]	= 14; cellsPtr [pos++]	= 13; cellsPtr [pos++]	= 12;	// Gauche
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 19;	cellsPtr [pos++]	= 18; cellsPtr [pos++]	= 17; cellsPtr [pos++]	= 16;	// Arrière
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 20;	cellsPtr [pos++]	= 21; cellsPtr [pos++]	= 22; cellsPtr [pos++]	= 23;	// Avant
-//	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 0;	cellsPtr [pos++]	= 1; cellsPtr [pos++]	= 17; cellsPtr [pos++]	= 16;	// Bas-Ar
-cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 16;	cellsPtr [pos++]	= 17; cellsPtr [pos++]	= 1; cellsPtr [pos++]	= 0;	// Bas-Ar
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 16;	cellsPtr [pos++]	= 17; cellsPtr [pos++]	= 1; cellsPtr [pos++]	= 0;	// Bas-Ar
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 1;	cellsPtr [pos++]	= 4; cellsPtr [pos++]	= 7; cellsPtr [pos++]	= 2;	// Bas-D
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 2; cellsPtr [pos++]	= 21; cellsPtr [pos++]	= 20;	// Bas-Av
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 12;	cellsPtr [pos++]	= 0; cellsPtr [pos++]	= 3; cellsPtr [pos++]	= 15;	// Bas-G
-//	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 8;	cellsPtr [pos++]	= 9; cellsPtr [pos++]	= 19; cellsPtr [pos++]	= 18;	// Haut-Ar
-cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 18;	cellsPtr [pos++]	= 19; cellsPtr [pos++]	= 9; cellsPtr [pos++]	= 8;	// Haut-Ar
-//	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 6;	cellsPtr [pos++]	= 11; cellsPtr [pos++]	= 8; cellsPtr [pos++]	= 5;	// Haut-D
-cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 5;	cellsPtr [pos++]	= 8; cellsPtr [pos++]	= 11; cellsPtr [pos++]	= 6;	// Haut-D
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 18;	cellsPtr [pos++]	= 19; cellsPtr [pos++]	= 9; cellsPtr [pos++]	= 8;	// Haut-Ar
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 5;	cellsPtr [pos++]	= 8; cellsPtr [pos++]	= 11; cellsPtr [pos++]	= 6;	// Haut-D
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 11;	cellsPtr [pos++]	= 10; cellsPtr [pos++]	= 23; cellsPtr [pos++]	= 22;	// Haut-Av
-//	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 10;	cellsPtr [pos++]	= 14; cellsPtr [pos++]	= 13; cellsPtr [pos++]	= 9;	// Haut-G
-cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 9;	cellsPtr [pos++]	= 13; cellsPtr [pos++]	= 14; cellsPtr [pos++]	= 10;	// Haut-G
-//	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 17;	cellsPtr [pos++]	= 4; cellsPtr [pos++]	= 5; cellsPtr [pos++]	= 18;	// Ar-D
-cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 18;	cellsPtr [pos++]	= 5; cellsPtr [pos++]	= 4; cellsPtr [pos++]	= 17;	// Ar-D
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 9;	cellsPtr [pos++]	= 13; cellsPtr [pos++]	= 14; cellsPtr [pos++]	= 10;	// Haut-G
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 18;	cellsPtr [pos++]	= 5; cellsPtr [pos++]	= 4; cellsPtr [pos++]	= 17;	// Ar-D
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 7;	cellsPtr [pos++]	= 6; cellsPtr [pos++]	= 22; cellsPtr [pos++]	= 21;	// Av-D
-//	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 19;	cellsPtr [pos++]	= 13; cellsPtr [pos++]	= 12; cellsPtr [pos++]	= 16;	// Ar-G
-cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 16;	cellsPtr [pos++]	= 12; cellsPtr [pos++]	= 13; cellsPtr [pos++]	= 19;	// Ar-G
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 16;	cellsPtr [pos++]	= 12; cellsPtr [pos++]	= 13; cellsPtr [pos++]	= 19;	// Ar-G
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 14;	cellsPtr [pos++]	= 15; cellsPtr [pos++]	= 20; cellsPtr [pos++]	= 23;	// Av-G
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
 	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 10;	cellsPtr [pos++]	= 14; cellsPtr [pos++]	= 23;							// Av-H-G
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
 	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 22;	cellsPtr [pos++]	= 6; cellsPtr [pos++]	= 11;							// Av-H-D
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
 	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 20; cellsPtr [pos++]	= 15;							// Av-B-G
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
 	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 2;	cellsPtr [pos++]	= 7; cellsPtr [pos++]	= 21;							// Av-B-D
-//	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 9;	cellsPtr [pos++]	= 13; cellsPtr [pos++]	= 19;							// Ar-H-G
-cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 19;	cellsPtr [pos++]	= 13; cellsPtr [pos++]	= 9;							// Ar-H-G
-//	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 18;	cellsPtr [pos++]	= 5; cellsPtr [pos++]	= 8;							// Ar-H-D
-cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 8;	cellsPtr [pos++]	= 5; cellsPtr [pos++]	= 18;							// Ar-H-D
-//	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 0;	cellsPtr [pos++]	= 16; cellsPtr [pos++]	= 12;							// Ar-B-G
-cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 12;	cellsPtr [pos++]	= 16; cellsPtr [pos++]	= 0;							// Ar-B-G
-//	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 1;	cellsPtr [pos++]	= 4; cellsPtr [pos++]	= 17;							// Ar-B-D
-cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 17;	cellsPtr [pos++]	= 4; cellsPtr [pos++]	= 7;							// Ar-B-D
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 19;	cellsPtr [pos++]	= 13; cellsPtr [pos++]	= 9;							// Ar-H-G
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 8;	cellsPtr [pos++]	= 5; cellsPtr [pos++]	= 18;							// Ar-H-D
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 12;	cellsPtr [pos++]	= 16; cellsPtr [pos++]	= 0;							// Ar-B-G
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 17;	cellsPtr [pos++]	= 4; cellsPtr [pos++]	= 7;							// Ar-B-D
+	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
 	cellArray->SetCells (6 + 12 + 8, idsArray);
 	CubePolyData->SetPolys (cellArray);
 	idsArray->Delete ( );   idsArray        = 0;
@@ -246,12 +268,13 @@ cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 17;	cellsPtr [pos++]	= 4; cellsPtr [pos
 	YMinusActor->SetOrigin (0.5, 0.5, 0.5);
 	ZPlusActor->SetOrigin (0.5, 0.5, 0.5);
 	ZMinusActor->SetOrigin (0.5, 0.5, 0.5);
-	XPlusActor->AddPosition (0.7, 0., textWidthScaled);
-	XMinusActor->AddPosition (-0.7, 0., -textWidthScaled);
-	YPlusActor->AddPosition (-textWidthScaled, 0.7, 0.);
-	YMinusActor->AddPosition (-textWidthScaled, -0.7, 0.);
-	ZPlusActor->AddPosition (-textWidthScaled, 0., 0.7);
-	ZMinusActor->SetPosition (textWidthScaled, 0., -0.7);
+	const double position	= 0.651;	// La bonne position pour que le texte soit collé au plus près de la face associée
+	XPlusActor->AddPosition (position, 0., textWidthScaled);
+	XMinusActor->AddPosition (-position, 0., -textWidthScaled);
+	YPlusActor->AddPosition (-textWidthScaled, position, 0.);
+	YMinusActor->AddPosition (-textWidthScaled, -position, 0.);
+	ZPlusActor->AddPosition (-textWidthScaled, 0., position);
+	ZMinusActor->SetPosition (textWidthScaled, 0., -position);
 	XPlusActor->SetOrientation (0, 90, 0);
 	XMinusActor->SetOrientation (0, -90, 0);
 	YPlusActor->SetOrientation (-90, 0, 0);
@@ -302,7 +325,7 @@ cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 17;	cellsPtr [pos++]	= 4; cellsPtr [pos
 
 
 vtkViewCubeActor::vtkViewCubeActor (const vtkViewCubeActor&)
-	: vtkPropAssembly ( ), Renderer (0), DrivenRenderer (0), CubePolyData ( ), CubeActor ( ), CubePolyDataMapper ( ), CellPicker ( ),
+	: vtkPropAssembly ( ), Renderer (0), DrivenRenderer (0), CubePolyData ( ), CubeActor ( ), CubePolyDataMapper ( ), CellPicker ( ), LastPickedFace ((unsigned char)-1),
 	  XPlusVectorText ( ), XMinusVectorText ( ), YPlusVectorText ( ), YMinusVectorText ( ), ZPlusVectorText ( ), ZMinusVectorText ( ), 
 	  XPlusActor ( ), XMinusActor ( ), YPlusActor ( ), YMinusActor ( ), ZPlusActor ( ), ZMinusActor ( ),
 	  Transform (0)
@@ -545,6 +568,7 @@ void vtkViewCubeActor::PickCallback (int x, int y)
 
 	if (0 != CellPicker->Pick (x, y, 0, Renderer))
 	{
+cout << "LAST=" << (unsigned long)LastPickedFace << "PICKED=" << CellPicker->GetCellId ( ) << endl;
 		double*		normal	= CellPicker->GetPickNormal ( );
 		vtkMath::Normalize( normal);
 		vtkCamera*	camera	= DrivenRenderer->GetActiveCamera ( );
@@ -556,11 +580,24 @@ void vtkViewCubeActor::PickCallback (int x, int y)
 			const double	ypos		= focalPoint [1] + normal [1] * distance;
 			const double	zpos		= focalPoint [2] + normal [2] * distance;
 			camera->SetPosition (xpos, ypos, zpos);
+//			if (CellPicker->GetCellId ( ) == LastPickedFace)
+			{
+				assert (0 != CubePolyData);
+				assert (0 != CubePolyData->GetCellData ( ));
+				assert (0 != CubePolyData->GetCellData ( )->GetVectors ( ));
+cout << "NUMBER OF TUPLES=" << CubePolyData->GetCellData ( )->GetVectors ( )->GetNumberOfTuples ( ) << " CELL ID=" << CellPicker->GetCellId ( ) << endl;
+				assert (CellPicker->GetCellId ( ) < CubePolyData->GetCellData ( )->GetVectors ( )->GetNumberOfTuples ( ));
+				double*	viewup	= CubePolyData->GetCellData ( )->GetVectors ( )->GetTuple (CellPicker->GetCellId ( ));
+cout << "VIEWUP=(" << viewup [0] << ", " << viewup [1] << ", " << viewup [2] << ")" << endl;
+				camera->SetViewUp (viewup);
+				camera->SetRoll (0.);
+			}	// if (CellPicker->GetCellId ( ) == LastPickedFace)
 			camera->ComputeViewPlaneNormal ( );
 			DrivenRenderer->ResetCameraClippingRange ( );
 			if (0 != DrivenRenderer->GetRenderWindow ( ))
 				DrivenRenderer->GetRenderWindow ( )->Render ( );
 		}	// if (0 != camera)
+		LastPickedFace	= CellPicker->GetCellId ( );
 	}	// if (0 != CellPicker->Pick (x, y, 0, Renderer))
 }	// vtkViewCubeActor::PickCallback
 
