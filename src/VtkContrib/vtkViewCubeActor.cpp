@@ -17,6 +17,7 @@
 #include <vtkInteractorStyle.h>
 #include <vtkIndent.h>
 #include <vtkCamera.h>
+#include <vtkQuad.h>
 
 #include <assert.h>
 
@@ -89,30 +90,108 @@ void vtkViewCubeActorPickCallback::Execute (vtkObject* caller, unsigned long eve
 			double vp [4];
 			ViewCube->GetRenderer ( )->GetViewport (vp);
 			if (ViewCube->GetRenderer ( )->IsInViewport  (x, y))
-			{
 				ViewCube->PickCallback (x, y);
-			}
-            // Add your custom handling code here
 	}	// if ((0 != interactor) && (0 != ViewCube))
 }	// vtkViewCubeActorPickCallback::Execute
+
+
+// ====================================== LA CLASSE vtkViewCubeActorHighlightCallback ====================================== 
+
+class vtkViewCubeActorHighlightCallback : public vtkCommand
+{
+	public :
+
+	static vtkViewCubeActorHighlightCallback* New ( )
+	{
+		return new vtkViewCubeActorHighlightCallback ( );
+	}
+
+	virtual void Execute (vtkObject* caller, unsigned long eventId, void* callData);
+	virtual void SetViewCube (vtkViewCubeActor* viewCube)
+	{ ViewCube	= viewCube; }
+	
+	
+	protected :
+	
+	vtkViewCubeActorHighlightCallback ( );
+	
+	virtual ~vtkViewCubeActorHighlightCallback ( );
+	
+	
+	private :
+	
+	vtkViewCubeActorHighlightCallback (const vtkViewCubeActorHighlightCallback&);
+	vtkViewCubeActorHighlightCallback& operator = (const vtkViewCubeActorHighlightCallback&);
+	vtkViewCubeActor*		ViewCube;
+};	// class vtkViewCubeActorHighlightCallback
+
+
+vtkViewCubeActorHighlightCallback::vtkViewCubeActorHighlightCallback ( )
+	: vtkCommand ( ), ViewCube (0)
+{
+	PassiveObserverOn ( );	// Indispensable pour que Execute soit appelé.
+}	// vtkViewCubeActorHighlightCallback::vtkViewCubeActorHighlightCallback
+
+
+vtkViewCubeActorHighlightCallback::vtkViewCubeActorHighlightCallback (const vtkViewCubeActorHighlightCallback&)
+	: vtkCommand ( ), ViewCube (0)
+{
+	assert (0 && "vtkViewCubeActorHighlightCallback copy constructor is not allowed.");
+}	// vtkViewCubeActorHighlightCallback::vtkViewCubeActorHighlightCallback
+
+
+vtkViewCubeActorHighlightCallback& vtkViewCubeActorHighlightCallback::operator = (const vtkViewCubeActorHighlightCallback&)
+{
+	assert (0 && "vtkViewCubeActorHighlightCallback assignment operator is not allowed.");
+	return *this;
+}	// vtkViewCubeActorHighlightCallback::operator =
+
+
+vtkViewCubeActorHighlightCallback::~vtkViewCubeActorHighlightCallback ( )
+{
+}	// vtkViewCubeActorHighlightCallback::~vtkViewCubeActorHighlightCallback
+
+
+void vtkViewCubeActorHighlightCallback::Execute (vtkObject* caller, unsigned long eventId, void* callData)
+{
+	vtkRenderWindowInteractor*	interactor	= reinterpret_cast<vtkRenderWindowInteractor*>(caller);
+
+	if ((0 != interactor) && (0 != ViewCube))
+	{
+			int	x	= interactor->GetEventPosition ( )[0];
+			int	y	= interactor->GetEventPosition ( )[1];
+			double vp [4];
+			ViewCube->GetRenderer ( )->GetViewport (vp);
+			if (ViewCube->GetRenderer ( )->IsInViewport  (x, y))
+				ViewCube->HighlightCallback (x, y);
+	}	// if ((0 != interactor) && (0 != ViewCube))
+}	// vtkViewCubeActorHighlightCallback::Execute
 
 
 // ====================================== LA CLASSE vtkViewCubeActor ====================================== 
 
 vtkViewCubeActor::vtkViewCubeActor ( )
-	: vtkPropAssembly ( ), Renderer (0), DrivenRenderer (0), CubePolyData ( ), CubeActor ( ), CubePolyDataMapper ( ), CellPicker ( ), LastPickedFace ((unsigned char)-1),
+	: vtkPropAssembly ( ), Renderer (0), DrivenRenderer (0), CubePolyData ( ), HighlightPolyData ( ), CubeActor ( ), HighlightActor ( ), CubePolyDataMapper ( ), HighlightPolyDataMapper ( ),
+	  CellPicker ( ), LastPickedFace ((unsigned char)-1), HighlightedFace ((unsigned char)-1),
 	  XPlusVectorText ( ), XMinusVectorText ( ), YPlusVectorText ( ), YMinusVectorText ( ), ZPlusVectorText ( ), ZMinusVectorText ( ), 
 	  XPlusActor ( ), XMinusActor ( ), YPlusActor ( ), YMinusActor ( ), ZPlusActor ( ), ZMinusActor ( ), ViewUpVectors ( ),
 	  Transform (0)
 {
-	CubePolyData		= vtkSmartPointer<vtkPolyData>::New ( );
-	CubeActor			= vtkSmartPointer<vtkActor>::New ( );
-	CubePolyDataMapper	= vtkSmartPointer<vtkPolyDataMapper>::New ( );
+	CubePolyData			= vtkSmartPointer<vtkPolyData>::New ( );
+	CubeActor				= vtkSmartPointer<vtkActor>::New ( );
+	CubePolyDataMapper		= vtkSmartPointer<vtkPolyDataMapper>::New ( );
 	assert (0 != CubePolyData.Get ( ));
 	assert (0 != CubePolyData->GetCellData ( ));
 	assert (0 != CubeActor.Get ( ));
 	assert (0 != CubePolyDataMapper.Get ( ));
 	CubePolyData->Initialize ( );
+	HighlightPolyData		= vtkSmartPointer<vtkPolyData>::New ( );
+	HighlightActor			= vtkSmartPointer<vtkActor>::New ( );
+	HighlightPolyDataMapper	= vtkSmartPointer<vtkPolyDataMapper>::New ( );
+	assert (0 != HighlightPolyData.Get ( ));
+	assert (0 != HighlightActor.Get ( ));
+	assert (0 != HighlightPolyDataMapper.Get ( ));
+	HighlightPolyData->Initialize ( );
 	ViewUpVectors		= vtkSmartPointer<vtkDoubleArray>::New ( );
 	ViewUpVectors->SetName ("ViewUp");
 	ViewUpVectors->SetNumberOfComponents (3);
@@ -158,6 +237,7 @@ vtkViewCubeActor::vtkViewCubeActor ( )
 	points->SetPoint (22, j2, j2, length);
 	points->SetPoint (23, j1, j2, length);
 	CubePolyData->SetPoints (points);
+	HighlightPolyData->SetPoints (points);
 
 	vtkCellArray*	cellArray	= vtkCellArray::New ( );
 	vtkIdTypeArray*	idsArray	= vtkIdTypeArray::New ( );
@@ -232,6 +312,11 @@ vtkViewCubeActor::vtkViewCubeActor ( )
 	CubeActor->GetProperty ( )->SetColor (.75, .75, .75);
 	CubeActor->PickableOn ( );
 	AddPart (CubeActor);
+	HighlightPolyDataMapper->SetInputData (HighlightPolyData);
+	HighlightPolyDataMapper->ScalarVisibilityOff ( );
+	HighlightActor->SetMapper (HighlightPolyDataMapper);
+	HighlightActor->GetProperty ( )->SetColor (1., 0., 0.);
+	HighlightActor->PickableOff ( );
 
 	XPlusVectorText		= vtkSmartPointer<vtkVectorText>::New ( );
 	XMinusVectorText	= vtkSmartPointer<vtkVectorText>::New ( );
@@ -251,6 +336,12 @@ vtkViewCubeActor::vtkViewCubeActor ( )
 	YMinusActor		= vtkSmartPointer<vtkActor>::New ( );
 	ZPlusActor		= vtkSmartPointer<vtkActor>::New ( );
 	ZMinusActor		= vtkSmartPointer<vtkActor>::New ( );
+	XPlusActor->PickableOff ( );
+	XMinusActor->PickableOff ( );
+	YPlusActor->PickableOff ( );
+	YMinusActor->PickableOff ( );
+	ZPlusActor->PickableOff ( );
+	ZMinusActor->PickableOff ( );
 	XPlusVectorText->Update ( );
 	double*	bounds			= XPlusVectorText->GetOutput ( )->GetBounds ( );
 	double	textWidth		= bounds [1] - bounds [0];
@@ -311,12 +402,6 @@ vtkViewCubeActor::vtkViewCubeActor ( )
 	AddPart (YMinusActor);
 	AddPart (ZPlusActor);
 	AddPart (ZMinusActor);
-/*	xPlusMapper->Delete ( );	xPlusMapper		= 0;
-	xMinusMapper->Delete ( );	xMinusMapper	= 0;
-	yPlusMapper->Delete ( );	yPlusMapper		= 0;
-	yMinusMapper->Delete ( );	yMinusMapper	= 0;
-	zPlusMapper->Delete ( );	zPlusMapper		= 0;
-	zMinusMapper->Delete ( );	zMinusMapper	= 0;*/
 
 	// Le picking sur les faces du cube :
 	CellPicker	= vtkSmartPointer<vtkCellPicker>::New ( );
@@ -325,7 +410,8 @@ vtkViewCubeActor::vtkViewCubeActor ( )
 
 
 vtkViewCubeActor::vtkViewCubeActor (const vtkViewCubeActor&)
-	: vtkPropAssembly ( ), Renderer (0), DrivenRenderer (0), CubePolyData ( ), CubeActor ( ), CubePolyDataMapper ( ), CellPicker ( ), LastPickedFace ((unsigned char)-1),
+	: vtkPropAssembly ( ), Renderer (0), DrivenRenderer (0), CubePolyData ( ), HighlightPolyData ( ), CubeActor ( ), HighlightActor ( ), CubePolyDataMapper ( ), HighlightPolyDataMapper ( ),
+	  CellPicker ( ), LastPickedFace ((unsigned char)-1), HighlightedFace ((unsigned char)-1),
 	  XPlusVectorText ( ), XMinusVectorText ( ), YPlusVectorText ( ), YMinusVectorText ( ), ZPlusVectorText ( ), ZMinusVectorText ( ), 
 	  XPlusActor ( ), XMinusActor ( ), YPlusActor ( ), YMinusActor ( ), ZPlusActor ( ), ZMinusActor ( ),
 	  Transform (0)
@@ -346,75 +432,6 @@ vtkViewCubeActor::~vtkViewCubeActor ( )
 	if (0 != DrivenRenderer)
 		DrivenRenderer->UnRegister (this);
 	DrivenRenderer	= 0;
-/*	if (0 != CellPicker)
-		CellPicker->Delete ( );
-	CellPicker	= 0;
-	if (0 != CubeActor)
-	{
-		RemovePart (CubeActor);
-		CubeActor->Delete ( );
-	}
-	CubeActor	= 0;
-	if (0 != XPlusActor)
-	{
-		RemovePart (XPlusActor);
-		XPlusActor->Delete ( );
-	}
-	XPlusActor	= 0;
-	if (0 != XMinusActor)
-	{
-		RemovePart (XMinusActor);
-		XMinusActor->Delete ( );
-	}
-	XMinusActor	= 0;
-	if (0 != YPlusActor)
-	{
-		RemovePart (YPlusActor);
-		YPlusActor->Delete ( );
-	}
-	YPlusActor	= 0;
-	if (0 != YMinusActor)
-	{
-		RemovePart (YMinusActor);
-		YMinusActor->Delete ( );
-	}
-	YMinusActor	= 0;
-	if (0 != ZPlusActor)
-	{
-		RemovePart (ZPlusActor);
-		ZPlusActor->Delete ( );
-	}
-	ZPlusActor	= 0;
-	if (0 != ZMinusActor)
-	{
-		RemovePart (ZMinusActor);
-		ZMinusActor->Delete ( );
-	}
-	ZMinusActor	= 0;
-	if (0 != XPlusVectorText)
-		XPlusVectorText->Delete ( );
-	XPlusVectorText	= 0;
-	if (0 != XMinusVectorText)
-		XMinusVectorText->Delete ( );
-	XMinusVectorText	= 0;
-	if (0 != YPlusVectorText)
-		YPlusVectorText->Delete ( );
-	YPlusVectorText	= 0;
-	if (0 != YMinusVectorText)
-		YMinusVectorText->Delete ( );
-	YMinusVectorText	= 0;
-	if (0 != ZPlusVectorText)
-		ZPlusVectorText->Delete ( );
-	ZPlusVectorText	= 0;
-	if (0 != ZMinusVectorText)
-		ZMinusVectorText->Delete ( );
-	ZMinusVectorText	= 0;
-	if (0 != CubePolyDataMapper)
-		CubePolyDataMapper->Delete ( );
-	CubePolyDataMapper	= 0;
-	if (0 != CubePolyData)
-		CubePolyData->Delete ( );
-	CubePolyData	= 0;	*/
 	if (0 != Transform)
 		Transform->Delete ( );
 	Transform	= 0;
@@ -452,6 +469,9 @@ void vtkViewCubeActor::SetRenderers (vtkRenderer* renderer, vtkRenderer* drivenR
 		vtkViewCubeActorPickCallback*	viewCubeCommand	= vtkViewCubeActorPickCallback::New ( );
 		viewCubeCommand->SetViewCube (this);
 		renderer->GetRenderWindow ( )->GetInteractor ( )->AddObserver (vtkCommand::LeftButtonReleaseEvent, viewCubeCommand, 10.);
+		vtkViewCubeActorHighlightCallback*	viewCubeHighlightCommand	= vtkViewCubeActorHighlightCallback::New ( );
+		viewCubeHighlightCommand->SetViewCube (this);
+		renderer->GetRenderWindow ( )->GetInteractor ( )->AddObserver (vtkCommand::MouseMoveEvent, viewCubeHighlightCommand, 10.);
 	}	// if (0 != renderer)
 	if (0 != drivenRenderer)
 	{
@@ -484,25 +504,13 @@ void vtkViewCubeActor::SetTransform (vtkTransform* transform)
 	while (0 != (property = collection->GetNextProp ( )))
 	{
 		vtkActor*	actor	= vtkActor::SafeDownCast (property);
-		if (0 != actor)
+		if ((0 != actor) && (actor != HighlightActor))
 		{
 			actor->SetUserTransform (Transform);
 		}	// if (0 != actor)
 	}	// while (0 != (property = collection->GetNextProp ( )))
-/*	if (0 != CubeActor)
-		CubeActor->SetUserTransform (Transform);
-	if (0 != XPlusActor)
-		XPlusActor->SetUserTransform (Transform);
-	if (0 != XMinusActor)
-		XMinusActor->SetUserTransform (Transform);
-	if (0 != YPlusActor)
-		YPlusActor->SetUserTransform (Transform);
-	if (0 != YMinusActor)
-		YMinusActor->SetUserTransform (Transform);
-	if (0 != ZPlusActor)
-		ZPlusActor->SetUserTransform (Transform);
-	if (0 != ZMinusActor)
-		ZMinusActor->SetUserTransform (Transform);*/
+	if (0 != HighlightActor)
+		HighlightActor->SetUserTransform (Transform);
 }	// vtkViewCubeActor::SetTransform
 
 
@@ -568,7 +576,6 @@ void vtkViewCubeActor::PickCallback (int x, int y)
 
 	if (0 != CellPicker->Pick (x, y, 0, Renderer))
 	{
-cout << "LAST=" << (unsigned long)LastPickedFace << "PICKED=" << CellPicker->GetCellId ( ) << endl;
 		double*		normal	= CellPicker->GetPickNormal ( );
 		vtkMath::Normalize( normal);
 		vtkCamera*	camera	= DrivenRenderer->GetActiveCamera ( );
@@ -580,15 +587,13 @@ cout << "LAST=" << (unsigned long)LastPickedFace << "PICKED=" << CellPicker->Get
 			const double	ypos		= focalPoint [1] + normal [1] * distance;
 			const double	zpos		= focalPoint [2] + normal [2] * distance;
 			camera->SetPosition (xpos, ypos, zpos);
-//			if (CellPicker->GetCellId ( ) == LastPickedFace)
+			if (CellPicker->GetCellId ( ) == LastPickedFace)
 			{
 				assert (0 != CubePolyData);
 				assert (0 != CubePolyData->GetCellData ( ));
 				assert (0 != CubePolyData->GetCellData ( )->GetVectors ( ));
-cout << "NUMBER OF TUPLES=" << CubePolyData->GetCellData ( )->GetVectors ( )->GetNumberOfTuples ( ) << " CELL ID=" << CellPicker->GetCellId ( ) << endl;
 				assert (CellPicker->GetCellId ( ) < CubePolyData->GetCellData ( )->GetVectors ( )->GetNumberOfTuples ( ));
 				double*	viewup	= CubePolyData->GetCellData ( )->GetVectors ( )->GetTuple (CellPicker->GetCellId ( ));
-cout << "VIEWUP=(" << viewup [0] << ", " << viewup [1] << ", " << viewup [2] << ")" << endl;
 				camera->SetViewUp (viewup);
 				camera->SetRoll (0.);
 			}	// if (CellPicker->GetCellId ( ) == LastPickedFace)
@@ -600,4 +605,52 @@ cout << "VIEWUP=(" << viewup [0] << ", " << viewup [1] << ", " << viewup [2] << 
 		LastPickedFace	= CellPicker->GetCellId ( );
 	}	// if (0 != CellPicker->Pick (x, y, 0, Renderer))
 }	// vtkViewCubeActor::PickCallback
+
+
+void vtkViewCubeActor::HighlightCallback (int x, int y)
+{
+	if ((0 == CellPicker.Get ( )) || (0 == Renderer) || (0 == DrivenRenderer))
+		return;
+	assert (0 != CubePolyData.Get ( ));
+	assert (0 != HighlightPolyData.Get ( ));
+	assert (0 != HighlightActor.Get ( ));
+
+	if (0 != CellPicker->Pick (x, y, 0, Renderer))
+	{
+		if (HighlightedFace == CellPicker->GetCellId ( ))
+			return;
+			
+		if ((unsigned char)-1 != HighlightedFace)
+		{
+			RemovePart (HighlightActor);
+		}	// if ((unsigned char)-1 != HighlightedFace)
+		HighlightedFace	= CellPicker->GetCellId ( );
+		vtkIdType	npts	= 0;
+		vtkIdType*	pts		= 0;
+		CubePolyData->GetCellPoints (CellPicker->GetCellId ( ), npts, pts);
+		if (0 == HighlightPolyData->GetNumberOfCells  ( ))
+		{
+			HighlightPolyData->Allocate (1);
+			HighlightPolyData->InsertNextCell (VTK_POLYGON, npts, pts);
+		}	// if (0 == HighlightPolyData->GetNumberOfCells  ( ))
+		else
+		{
+			HighlightPolyData->ReplaceCell (0, npts, pts);
+			HighlightPolyData->Modified ( );
+		}	// if (0 == HighlightPolyData->GetNumberOfCells  ( ))
+
+		AddPart (HighlightActor);
+	}	// if (0 != CellPicker->Pick (x, y, 0, Renderer))
+	else
+	{
+		if ((unsigned char)-1 != HighlightedFace)
+		{
+			RemovePart (HighlightActor);
+		}	// if ((unsigned char)-1 != HighlightedFace)
+		HighlightedFace	= (unsigned char)-1;
+	}	// else if (0 != CellPicker->Pick (x, y, 0, Renderer))
+
+	if (0 != DrivenRenderer->GetRenderWindow ( ))
+		DrivenRenderer->GetRenderWindow ( )->Render ( );
+}	// vtkViewCubeActor::HighlightCallback
 

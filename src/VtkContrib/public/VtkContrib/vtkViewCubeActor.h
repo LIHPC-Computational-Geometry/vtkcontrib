@@ -88,6 +88,11 @@ class vtkViewCubeActor : public vtkPropAssembly
 	 */
 	virtual void PickCallback (int x, int y);
 
+	/**
+	 * Regarde si une face du cube est pointée aux coordonnées transmises et, le cas échéant, met cette face en surbrillance. Annule ue éventuelle surbrillance antérieure d'une autre face.
+	 */
+	virtual void HighlightCallback (int x, int y);
+	
 
 	protected:
 
@@ -108,28 +113,28 @@ class vtkViewCubeActor : public vtkPropAssembly
 	vtkViewCubeActor (const vtkViewCubeActor&);
 	vtkViewCubeActor& operator = (const vtkViewCubeActor&);
 	
-	vtkRenderer			*Renderer, *DrivenRenderer;
+	vtkRenderer								*Renderer, *DrivenRenderer;
 
 	/** Le "cube". */
-	vtkSmartPointer<vtkPolyData>		CubePolyData;
-	vtkSmartPointer<vtkActor>			CubeActor;
-	vtkSmartPointer<vtkPolyDataMapper>	CubePolyDataMapper;
+	vtkSmartPointer<vtkPolyData>			CubePolyData, HighlightPolyData;
+	vtkSmartPointer<vtkActor>				CubeActor, HighlightActor;
+	vtkSmartPointer<vtkPolyDataMapper>		CubePolyDataMapper, HighlightPolyDataMapper;
 	
 	/** Le picking sur les faces du ViewCube. */
-	vtkSmartPointer<vtkCellPicker>		CellPicker;
+	vtkSmartPointer<vtkCellPicker>			CellPicker;
 
-	/** La dernière face pickée. */
-	unsigned char						LastPickedFace;
+	/** La dernière face pickée, éventuelle face en cours de surbrillance. */
+	unsigned char							LastPickedFace, HighlightedFace;
 
 	/** Les labels. */
-	vtkSmartPointer<vtkVectorText>		XPlusVectorText, XMinusVectorText, YPlusVectorText, YMinusVectorText, ZPlusVectorText, ZMinusVectorText;
-	vtkSmartPointer<vtkActor>			XPlusActor, XMinusActor, YPlusActor, YMinusActor, ZPlusActor, ZMinusActor;
+	vtkSmartPointer<vtkVectorText>			XPlusVectorText, XMinusVectorText, YPlusVectorText, YMinusVectorText, ZPlusVectorText, ZMinusVectorText;
+	vtkSmartPointer<vtkActor>				XPlusActor, XMinusActor, YPlusActor, YMinusActor, ZPlusActor, ZMinusActor;
 
 	/** Les vecteurs "orientation vers le haut". */
-	vtkSmartPointer<vtkDoubleArray>		ViewUpVectors;
+	vtkSmartPointer<vtkDoubleArray>			ViewUpVectors;
 	
 	/** L'éventuelle transformation utilisateur. */
-	vtkTransform						*Transform;
+	vtkTransform							*Transform;
 };	// class vtkViewCubeActor
 
 
