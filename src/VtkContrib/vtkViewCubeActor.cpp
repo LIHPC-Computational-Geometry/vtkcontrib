@@ -170,11 +170,15 @@ void vtkViewCubeActorHighlightCallback::Execute (vtkObject* caller, unsigned lon
 
 // ====================================== LA CLASSE vtkViewCubeActor ====================================== 
 
+// Couleur des faces du cube : gris clair.
+static const unsigned char	gray	= (unsigned char)(3. * 255. / 4.);
+
+
 vtkViewCubeActor::vtkViewCubeActor ( )
-	: vtkPropAssembly ( ), Renderer (0), DrivenRenderer (0), CubePolyData ( ), HighlightPolyData ( ), CubeActor ( ), HighlightActor ( ), CubePolyDataMapper ( ), HighlightPolyDataMapper ( ),
+	: vtkPropAssembly ( ), Renderer (0), DrivenRenderer (0), CubePolyData ( ), CubeActor ( ), CubePolyDataMapper ( ),
 	  CellPicker ( ), LastPickedFace ((unsigned char)-1), HighlightedFace ((unsigned char)-1),
 	  XPlusVectorText ( ), XMinusVectorText ( ), YPlusVectorText ( ), YMinusVectorText ( ), ZPlusVectorText ( ), ZMinusVectorText ( ), 
-	  XPlusActor ( ), XMinusActor ( ), YPlusActor ( ), YMinusActor ( ), ZPlusActor ( ), ZMinusActor ( ), ViewUpVectors ( ),
+	  XPlusActor ( ), XMinusActor ( ), YPlusActor ( ), YMinusActor ( ), ZPlusActor ( ), ZMinusActor ( ), ColorsVectors ( ), ViewUpVectors ( ),
 	  Transform (0)
 {
 	CubePolyData			= vtkSmartPointer<vtkPolyData>::New ( );
@@ -185,16 +189,15 @@ vtkViewCubeActor::vtkViewCubeActor ( )
 	assert (0 != CubeActor.Get ( ));
 	assert (0 != CubePolyDataMapper.Get ( ));
 	CubePolyData->Initialize ( );
-	HighlightPolyData		= vtkSmartPointer<vtkPolyData>::New ( );
-	HighlightActor			= vtkSmartPointer<vtkActor>::New ( );
-	HighlightPolyDataMapper	= vtkSmartPointer<vtkPolyDataMapper>::New ( );
-	assert (0 != HighlightPolyData.Get ( ));
-	assert (0 != HighlightActor.Get ( ));
-	assert (0 != HighlightPolyDataMapper.Get ( ));
-	HighlightPolyData->Initialize ( );
+	// Les couleurs des faces du cube : grises, sauf celle pointée par la souris (rouge) :
+	ColorsVectors = vtkSmartPointer<vtkUnsignedCharArray>::New ( );
+	ColorsVectors->SetName ("Colors");
+	ColorsVectors->SetNumberOfComponents (3);
+	// Les directions vers le haut :
 	ViewUpVectors		= vtkSmartPointer<vtkDoubleArray>::New ( );
 	ViewUpVectors->SetName ("ViewUp");
 	ViewUpVectors->SetNumberOfComponents (3);
+	// Les points du cube :
 	vtkSmartPointer<vtkPoints>	points	= vtkSmartPointer<vtkPoints>::New ( );
 	assert (0 != points.Get ( ));
 	points->SetNumberOfPoints (24);
@@ -237,7 +240,6 @@ vtkViewCubeActor::vtkViewCubeActor ( )
 	points->SetPoint (22, j2, j2, length);
 	points->SetPoint (23, j1, j2, length);
 	CubePolyData->SetPoints (points);
-	HighlightPolyData->SetPoints (points);
 
 	vtkCellArray*	cellArray	= vtkCellArray::New ( );
 	vtkIdTypeArray*	idsArray	= vtkIdTypeArray::New ( );
@@ -251,72 +253,97 @@ vtkViewCubeActor::vtkViewCubeActor ( )
 	size_t		pos			= 0;
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 0;	cellsPtr [pos++]	= 1; cellsPtr [pos++]	= 2; cellsPtr [pos++]	= 3;	// Bas
 	ViewUpVectors->InsertNextTuple3 (0., 0., 1.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 5; cellsPtr [pos++]	= 6; cellsPtr [pos++]	= 7;	// Droite
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 8;	cellsPtr [pos++]	= 9; cellsPtr [pos++]	= 10; cellsPtr [pos++]	= 11;	// Haut
 	ViewUpVectors->InsertNextTuple3 (0., 0., 1.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 15;	cellsPtr [pos++]	= 14; cellsPtr [pos++]	= 13; cellsPtr [pos++]	= 12;	// Gauche
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 19;	cellsPtr [pos++]	= 18; cellsPtr [pos++]	= 17; cellsPtr [pos++]	= 16;	// Arrière
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 20;	cellsPtr [pos++]	= 21; cellsPtr [pos++]	= 22; cellsPtr [pos++]	= 23;	// Avant
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 16;	cellsPtr [pos++]	= 17; cellsPtr [pos++]	= 1; cellsPtr [pos++]	= 0;	// Bas-Ar
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 1;	cellsPtr [pos++]	= 4; cellsPtr [pos++]	= 7; cellsPtr [pos++]	= 2;	// Bas-D
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 2; cellsPtr [pos++]	= 21; cellsPtr [pos++]	= 20;	// Bas-Av
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 12;	cellsPtr [pos++]	= 0; cellsPtr [pos++]	= 3; cellsPtr [pos++]	= 15;	// Bas-G
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 18;	cellsPtr [pos++]	= 19; cellsPtr [pos++]	= 9; cellsPtr [pos++]	= 8;	// Haut-Ar
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 5;	cellsPtr [pos++]	= 8; cellsPtr [pos++]	= 11; cellsPtr [pos++]	= 6;	// Haut-D
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 11;	cellsPtr [pos++]	= 10; cellsPtr [pos++]	= 23; cellsPtr [pos++]	= 22;	// Haut-Av
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 9;	cellsPtr [pos++]	= 13; cellsPtr [pos++]	= 14; cellsPtr [pos++]	= 10;	// Haut-G
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 18;	cellsPtr [pos++]	= 5; cellsPtr [pos++]	= 4; cellsPtr [pos++]	= 17;	// Ar-D
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 7;	cellsPtr [pos++]	= 6; cellsPtr [pos++]	= 22; cellsPtr [pos++]	= 21;	// Av-D
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 16;	cellsPtr [pos++]	= 12; cellsPtr [pos++]	= 13; cellsPtr [pos++]	= 19;	// Ar-G
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 4;	cellsPtr [pos++]	= 14;	cellsPtr [pos++]	= 15; cellsPtr [pos++]	= 20; cellsPtr [pos++]	= 23;	// Av-G
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 10;	cellsPtr [pos++]	= 14; cellsPtr [pos++]	= 23;							// Av-H-G
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 22;	cellsPtr [pos++]	= 6; cellsPtr [pos++]	= 11;							// Av-H-D
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 20; cellsPtr [pos++]	= 15;							// Av-B-G
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 2;	cellsPtr [pos++]	= 7; cellsPtr [pos++]	= 21;							// Av-B-D
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 19;	cellsPtr [pos++]	= 13; cellsPtr [pos++]	= 9;							// Ar-H-G
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 8;	cellsPtr [pos++]	= 5; cellsPtr [pos++]	= 18;							// Ar-H-D
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 12;	cellsPtr [pos++]	= 16; cellsPtr [pos++]	= 0;							// Ar-B-G
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellsPtr [pos++]	= 3;	cellsPtr [pos++]	= 17;	cellsPtr [pos++]	= 4; cellsPtr [pos++]	= 7;							// Ar-B-D
 	ViewUpVectors->InsertNextTuple3 (0., 1., 0.);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	cellArray->SetCells (6 + 12 + 8, idsArray);
 	CubePolyData->SetPolys (cellArray);
+	ColorsVectors->InsertNextTuple3 (gray, gray, gray);
 	idsArray->Delete ( );   idsArray        = 0;
 	cellArray->Delete ( );  cellArray       = 0;
+	
 //	points->Delete ( );		points			= 0;
 	CubePolyDataMapper->SetInputData (CubePolyData);
-	CubePolyDataMapper->ScalarVisibilityOff ( );
+//	CubePolyDataMapper->ScalarVisibilityOff ( );
+CubePolyDataMapper->ScalarVisibilityOn ( );
+CubePolyData->GetCellData ( )->SetScalars (ColorsVectors);
 	CubeActor->SetMapper (CubePolyDataMapper);
-	CubeActor->GetProperty ( )->SetColor (.75, .75, .75);
+//	CubeActor->GetProperty ( )->SetColor (.75, .75, .75);
 	CubeActor->PickableOn ( );
 	AddPart (CubeActor);
-	HighlightPolyDataMapper->SetInputData (HighlightPolyData);
-	HighlightPolyDataMapper->ScalarVisibilityOff ( );
-	HighlightActor->SetMapper (HighlightPolyDataMapper);
-	HighlightActor->GetProperty ( )->SetColor (1., 0., 0.);
-	HighlightActor->PickableOff ( );
 
 	XPlusVectorText		= vtkSmartPointer<vtkVectorText>::New ( );
 	XMinusVectorText	= vtkSmartPointer<vtkVectorText>::New ( );
@@ -410,10 +437,10 @@ vtkViewCubeActor::vtkViewCubeActor ( )
 
 
 vtkViewCubeActor::vtkViewCubeActor (const vtkViewCubeActor&)
-	: vtkPropAssembly ( ), Renderer (0), DrivenRenderer (0), CubePolyData ( ), HighlightPolyData ( ), CubeActor ( ), HighlightActor ( ), CubePolyDataMapper ( ), HighlightPolyDataMapper ( ),
+	: vtkPropAssembly ( ), Renderer (0), DrivenRenderer (0), CubePolyData ( ), CubeActor ( ), CubePolyDataMapper ( ),
 	  CellPicker ( ), LastPickedFace ((unsigned char)-1), HighlightedFace ((unsigned char)-1),
 	  XPlusVectorText ( ), XMinusVectorText ( ), YPlusVectorText ( ), YMinusVectorText ( ), ZPlusVectorText ( ), ZMinusVectorText ( ), 
-	  XPlusActor ( ), XMinusActor ( ), YPlusActor ( ), YMinusActor ( ), ZPlusActor ( ), ZMinusActor ( ),
+	  XPlusActor ( ), XMinusActor ( ), YPlusActor ( ), YMinusActor ( ), ZPlusActor ( ), ZMinusActor ( ), ColorsVectors ( ), ViewUpVectors ( ),
 	  Transform (0)
 {
 	assert (0 && "vtkViewCubeActor copy constructor is not allowed.");
@@ -504,13 +531,11 @@ void vtkViewCubeActor::SetTransform (vtkTransform* transform)
 	while (0 != (property = collection->GetNextProp ( )))
 	{
 		vtkActor*	actor	= vtkActor::SafeDownCast (property);
-		if ((0 != actor) && (actor != HighlightActor))
+		if (0 != actor)
 		{
 			actor->SetUserTransform (Transform);
 		}	// if (0 != actor)
 	}	// while (0 != (property = collection->GetNextProp ( )))
-	if (0 != HighlightActor)
-		HighlightActor->SetUserTransform (Transform);
 }	// vtkViewCubeActor::SetTransform
 
 
@@ -612,40 +637,25 @@ void vtkViewCubeActor::HighlightCallback (int x, int y)
 	if ((0 == CellPicker.Get ( )) || (0 == Renderer) || (0 == DrivenRenderer))
 		return;
 	assert (0 != CubePolyData.Get ( ));
-	assert (0 != HighlightPolyData.Get ( ));
-	assert (0 != HighlightActor.Get ( ));
 
+	CubePolyData->GetCellData ( )->SetActiveScalars ("Colors");	
 	if (0 != CellPicker->Pick (x, y, 0, Renderer))
 	{
 		if (HighlightedFace == CellPicker->GetCellId ( ))
 			return;
-			
+		
 		if ((unsigned char)-1 != HighlightedFace)
 		{
-			RemovePart (HighlightActor);
+			ColorsVectors->SetTuple3 (HighlightedFace, gray, gray, gray);
 		}	// if ((unsigned char)-1 != HighlightedFace)
 		HighlightedFace	= CellPicker->GetCellId ( );
-		vtkIdType	npts	= 0;
-		vtkIdType*	pts		= 0;
-		CubePolyData->GetCellPoints (CellPicker->GetCellId ( ), npts, pts);
-		if (0 == HighlightPolyData->GetNumberOfCells  ( ))
-		{
-			HighlightPolyData->Allocate (1);
-			HighlightPolyData->InsertNextCell (VTK_POLYGON, npts, pts);
-		}	// if (0 == HighlightPolyData->GetNumberOfCells  ( ))
-		else
-		{
-			HighlightPolyData->ReplaceCell (0, npts, pts);
-			HighlightPolyData->Modified ( );
-		}	// if (0 == HighlightPolyData->GetNumberOfCells  ( ))
-
-		AddPart (HighlightActor);
+		ColorsVectors->SetTuple3 (HighlightedFace, 255, 0, 0);
 	}	// if (0 != CellPicker->Pick (x, y, 0, Renderer))
 	else
 	{
 		if ((unsigned char)-1 != HighlightedFace)
 		{
-			RemovePart (HighlightActor);
+			ColorsVectors->SetTuple3 (HighlightedFace, gray, gray, gray);
 		}	// if ((unsigned char)-1 != HighlightedFace)
 		HighlightedFace	= (unsigned char)-1;
 	}	// else if (0 != CellPicker->Pick (x, y, 0, Renderer))

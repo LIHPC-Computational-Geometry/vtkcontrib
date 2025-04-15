@@ -9,6 +9,7 @@
 #include <vtkPropAssembly.h>
 #include <vtkActor.h>
 #include <vtkDoubleArray.h>
+#include <vtkUnsignedCharArray.h>
 #include <vtkPolyData.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkCellPicker.h>
@@ -89,7 +90,7 @@ class vtkViewCubeActor : public vtkPropAssembly
 	virtual void PickCallback (int x, int y);
 
 	/**
-	 * Regarde si une face du cube est pointée aux coordonnées transmises et, le cas échéant, met cette face en surbrillance. Annule ue éventuelle surbrillance antérieure d'une autre face.
+	 * Regarde si une face du cube est pointée aux coordonnées transmises et, le cas échéant, met cette face en surbrillance. Annule une éventuelle surbrillance antérieure d'une autre face.
 	 */
 	virtual void HighlightCallback (int x, int y);
 	
@@ -116,9 +117,9 @@ class vtkViewCubeActor : public vtkPropAssembly
 	vtkRenderer								*Renderer, *DrivenRenderer;
 
 	/** Le "cube". */
-	vtkSmartPointer<vtkPolyData>			CubePolyData, HighlightPolyData;
-	vtkSmartPointer<vtkActor>				CubeActor, HighlightActor;
-	vtkSmartPointer<vtkPolyDataMapper>		CubePolyDataMapper, HighlightPolyDataMapper;
+	vtkSmartPointer<vtkPolyData>			CubePolyData;
+	vtkSmartPointer<vtkActor>				CubeActor;
+	vtkSmartPointer<vtkPolyDataMapper>		CubePolyDataMapper;
 	
 	/** Le picking sur les faces du ViewCube. */
 	vtkSmartPointer<vtkCellPicker>			CellPicker;
@@ -130,6 +131,9 @@ class vtkViewCubeActor : public vtkPropAssembly
 	vtkSmartPointer<vtkVectorText>			XPlusVectorText, XMinusVectorText, YPlusVectorText, YMinusVectorText, ZPlusVectorText, ZMinusVectorText;
 	vtkSmartPointer<vtkActor>				XPlusActor, XMinusActor, YPlusActor, YMinusActor, ZPlusActor, ZMinusActor;
 
+	/** Les couleurs des faces du cube : grises, sauf celle pointée par la souris (rouge). */
+	vtkSmartPointer<vtkUnsignedCharArray>	ColorsVectors;
+	
 	/** Les vecteurs "orientation vers le haut". */
 	vtkSmartPointer<vtkDoubleArray>			ViewUpVectors;
 	
