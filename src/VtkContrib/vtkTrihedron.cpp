@@ -119,7 +119,7 @@ vtkTrihedron::vtkTrihedron ( )
 	m_yLabelActor->SetMapper(yLabelMapper);
 	m_yLabelActor->SetScale(0.4,0.4,0.4);
 	m_yLabelActor->AddPosition(0.0,1.1,0.0);
-	m_yLabelActor->RotateZ (90);
+//	m_yLabelActor->RotateZ (90);
 	m_yTextMapper->SetInput ("y");
 	m_yTextMapper->GetTextProperty ( )->SetFontFamilyToArial ( );
 	m_yTextMapper->GetTextProperty ( )->SetFontSize (24);

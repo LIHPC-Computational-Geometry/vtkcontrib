@@ -5,7 +5,7 @@ find_package (GUIToolkitsVariables)
 include (${GUIToolkitsVariables_CMAKE_DIR}/common.cmake)
 include (${GUIToolkitsVariables_CMAKE_DIR}/workarounds.cmake)
 
-set (ALL_EXECUTABLES areapicker point_widget point_widget2 trihedrons torus viewcube)
+set (ALL_EXECUTABLES areapicker point_widget point_widget2 frustum_widget trihedrons torus viewcube)
 
 foreach (exe ${ALL_EXECUTABLES}) 
 	add_executable (${exe} ${exe}.cpp)
