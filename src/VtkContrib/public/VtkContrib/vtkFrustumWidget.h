@@ -64,6 +64,11 @@ class vtkFrustumWidget : public vtk3DWidget
 	virtual void SetPlaceFactor (double factor);
 	//@} 
 
+	//@{
+	/**
+	 * Définition du plan.
+	 */
+
 	/**
 	 * @param	indice du plan modifié ou consulté.
 	 * @param	nouvelle origine.
@@ -145,6 +150,14 @@ class vtkFrustumWidget : public vtk3DWidget
 		 */
 		virtual void PlaceWidget (double bounds [6]);
 		virtual void SizeHandles ( );
+
+		/**
+		 * Contrairement à vtkImpliciPlane::SetOrigin (double [3]), cette méthode permet de modifier l'origine du
+		 * plan sans la restreindre à sa boite englobante courante => Une nouvelle boite englobante est éventuellement
+		 * définie en sortie de cet appel.
+		 * @since	5.13.0
+		 */
+		virtual void SetUnboundedOrigin (double origin [3]);
 
 		/**
 		 * Nouvelle position => actualise la représentation sans recalculer la position qui est transmise en argument.

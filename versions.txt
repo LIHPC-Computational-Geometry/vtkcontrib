@@ -1,3 +1,10 @@
+Version 5.13.0 : 21/10/25
+================
+
+Correctif vtkFrustumWidget : il est maintenant possible de modifier l'origine d'un des plans du tronc 
+via vtkFrustumWidget->SetPlane (SIDE, origin, normal).
+
+
 Version 5.12.0 : 17/10/25
 ================
 
