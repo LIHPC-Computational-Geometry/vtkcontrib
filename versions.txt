@@ -1,3 +1,16 @@
+Version 5.12.0 : 17/10/25
+================
+
+Classe vtkPolygonFilter.
+
+Correctifs vtkFrustumWidget :
+- le rayon des tubes délimitants le contour des plans est calculé au moment de l'affichage => évite que ces 
+tubes soient tellement fins qu'on ne les voit pas.
+- Dans certains cas à la moindre interaction (zoom/rotation) la scène disparaissait (pb probable de clipping).
+Cela semblait provenir des vtkLines du vtkPolyData en sortie de vtkFrustumSource dont certaines composantes
+de coordonnées pouvaient être infinies. Problème semble t-il résolu en filtrant avec la classe vtkPolygonFilter.
+
+
 Version 5.11.0 : 03/10/25
 ================
 
