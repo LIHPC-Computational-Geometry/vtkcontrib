@@ -7,6 +7,8 @@
 #ifndef VTK_FRUSTUM_WIDGET_H
 #define VTK_FRUSTUM_WIDGET_H
 
+#include "VtkContrib/vtkPolygonFilter.h"
+
 #include <vtkActor.h>
 #include <vtk3DWidget.h>
 #include <vtkActor.h>
@@ -212,6 +214,7 @@ class vtkFrustumWidget : public vtk3DWidget
 	
 	/** Le tronc et sa représentation. */
 	vtkSmartPointer<vtkFrustumSource>						_frustum;
+	vtkSmartPointer<vtkPolygonFilter>						_polygonFilter;
 	vtkSmartPointer<vtkPlanes>								_planes;
 	vtkSmartPointer<vtkPolyDataMapper>						_frustumMapper;
 	vtkSmartPointer<vtkActor>								_frustumActor;

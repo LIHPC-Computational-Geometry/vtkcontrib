@@ -237,10 +237,12 @@ vtkFrustumWidget::vtkFrustumWidget ( )
 	: vtk3DWidget ( ), _parallelPlanes ( )
 {
 	_frustum		= vtkSmartPointer<vtkFrustumSource>::Take (vtkFrustumSource::New ( ));
+	_polygonFilter	= vtkSmartPointer<vtkPolygonFilter>::Take (vtkPolygonFilter::New ( ));
+	_polygonFilter->SetInputData (_frustum->GetOutput ( ));
 	_planes			= vtkSmartPointer<vtkPlanes>::Take (vtkPlanes::New ( ));
 	_frustumMapper	= vtkSmartPointer<vtkPolyDataMapper>::Take (vtkPolyDataMapper::New ( ));
 	_frustumActor	= vtkSmartPointer<vtkActor>::Take (vtkActor::New ( ));
-	_frustumMapper->SetInputConnection (_frustum->GetOutputPort ( ));
+	_frustumMapper->SetInputData (_polygonFilter->GetOutput ( ));
 	_frustumActor->SetMapper (_frustumMapper);
 	_contourFilter	= vtkSmartPointer<vtkTubeFilter>::Take (vtkTubeFilter::New ( ));
 	_contourMapper	= vtkSmartPointer<vtkPolyDataMapper>::Take (vtkPolyDataMapper::New ( ));
@@ -312,6 +314,12 @@ void vtkFrustumWidget::SetEnabled (int enabled)
 	{
 		if (true == enabled)
 		{
+			_polygonFilter->Update ( );
+			double	bounds [6]	= { 0., 0., 0., 0., 0., 0. };
+			GetBounds (bounds);
+			const double	radius	= sqrt ((bounds [1] - bounds [0])*(bounds [1] - bounds [0]) + (bounds [3] - bounds [2])*(bounds [3] - bounds [2]) + (bounds [5] - bounds [4])*(bounds [5] - bounds [4])) / 200.;
+			_contourFilter->SetRadius (radius);	// 5.12.0
+			_contourFilter->Update ( );
 			GetCurrentRenderer ( )->AddActor (_frustumActor);
 			GetCurrentRenderer ( )->AddActor (_contourActor);
 		}
@@ -490,6 +498,7 @@ void vtkFrustumWidget::GetBounds (double bounds [6])
 	else
 	{
 		// frustum->GetBounds (bounds);
+		// CP : le commentaire ci-après n'est peut être plus vrai depuis l'utilisation de vtkPolygonFilter (v 5.12.0).
 		/* On n'utilise pas frustum->GetBounds (bounds) car notre polydata contient des lignes qui parfois, de manière non reproductible,
 		 * sortent carrément du domaine observé, à savoir qu'une composante d'une coordonnée peut être de l'ordre de 10E+30 ! Parfois veut ici
 		 * dire environ 1 fois sur 15, et c'est semble-t-il toujours au premier appel de cette fonction. Problème d'initialisation d'une 
@@ -638,6 +647,7 @@ void vtkFrustumWidget::CreateDefaultRepresentation ( )
 	_planes->SetNormals (normals);
 	_frustum->SetPlanes (_planes);
 	_frustum->Update ( );
+	_polygonFilter->Update ( );
 	// On confère à ce widget le look de la classe vtkImplicitPlaneWidget :
 	_frustumActor->SetProperty (_planeWidgets [0]->GetPlaneProperty ( ));
 }	// vtkFrustumWidget::CreateDefaultRepresentation
@@ -692,6 +702,7 @@ void vtkFrustumWidget::Update (vtkFrustumWidget::vtkInternalPlaneWidget* planeWi
 	_frustum->SetPlanes (_planes);
 	_frustum->Modified ( );
 	_frustum->Update ( );
+	_polygonFilter->Update ( );
 
 	// Recentrer les manipulateurs sur leur face :
 	vtkPolyData*	frustum	= _frustum->GetOutput ( );
