@@ -102,6 +102,16 @@ void vtkFrustumWidget::vtkInternalPlaneWidget::SizeHandles ( )
 }	// vtkInternalPlaneWidget::SizeHandles
 
 
+void vtkFrustumWidget::vtkInternalPlaneWidget::SetUnboundedOrigin (double origin [3])
+{
+	if (0 != this->Plane)
+	{
+		this->Plane->SetOrigin (origin);
+		UpdateRepresentation (origin);
+	}	// if (0 != this->Plane)
+}	// vtkInternalPlaneWidget::SetUnboundedOrigin
+
+
 void vtkFrustumWidget::vtkInternalPlaneWidget::UpdateRepresentation (double origin [3])
 {
 	// Issu du code de vtkImplicitPlaneWidget::UpdateRepresentation ( ) de VTK 7.1.1, mais en prnant pour origine celle transmise en argument.
@@ -377,7 +387,8 @@ void vtkFrustumWidget::SetPlane (SIDE p, double origin [3], double normal [3])
 	vtkFrustumWidget::vtkInternalPlaneWidget*	planeWidget	= GetPlane (p);
 	if (0 != planeWidget)
 	{
-		planeWidget->SetOrigin (origin);
+//		planeWidget->SetOrigin (origin);
+		planeWidget->SetUnboundedOrigin (origin);	// v 5.13.0
 		planeWidget->SetNormal (normal);
 		Update (planeWidget);
 	}	// if (0 != planeWidget)

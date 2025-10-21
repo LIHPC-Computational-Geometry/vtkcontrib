@@ -8,8 +8,9 @@
 #include <iostream>
 
 
-/** <P>Filtre permettant d'extraire les polygones d'une instance de vtkPolyData.
- * </P>
+/** 
+ * Filtre permettant d'extraire les polygones d'une instance de vtkPolyData.
+ *
  * @author		Charles PIGNEROL, CEA/DAM/DCLC
  */
 class vtkPolygonFilter : public vtkPolyDataAlgorithm
