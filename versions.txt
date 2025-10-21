@@ -1,3 +1,11 @@
+Version 5.11.0 : 03/10/25
+================
+
+Classe vtkFrustumWidget et test associé frustum_widget.
+
+vtkTrihedron : annulation de la rotation de 90° de l'affichage du "Y".
+
+
 Version 5.10.0 : 15/04/25
 ================
 
