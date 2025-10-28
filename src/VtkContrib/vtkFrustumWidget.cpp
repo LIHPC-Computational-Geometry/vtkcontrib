@@ -224,7 +224,7 @@ void vtkFrustumWidget::vtkInternalPlaneWidget::SetInteractorEnabled (bool enable
 		}	// if (true == enabled)
 	}	// if (0 != this->Picker)
 	else
-		vtkErrorMacro ("vtkFrustumWidget::SetInteractorEnabled : null picker.")
+		vtkErrorMacro ("vtkFrustumWidget::SetInteractorEnabled : null picker.");
 }	// vtkInternalPlaneWidget::SetInteractorEnabled
 
 		
@@ -393,7 +393,7 @@ void vtkFrustumWidget::SetPlane (SIDE p, double origin [3], double normal [3])
 		Update (planeWidget);
 	}	// if (0 != planeWidget)
 	else
-		vtkErrorMacro ("vtkFrustumWidget::SetPlane : 0 <= p <= 5 is not verified. p =" << p)
+		vtkErrorMacro ("vtkFrustumWidget::SetPlane : 0 <= p <= 5 is not verified. p =" << p);
 }	// vtkFrustumWidget::SetPlane
 
 
@@ -406,7 +406,7 @@ void vtkFrustumWidget::GetPlane (SIDE p, double origin [3], double normal [3])
 		planeWidget->GetNormal (normal);
 	}	// if (0 != planeWidget)
 	else
-		vtkErrorMacro ("vtkFrustumWidget::GetPlane : 0 <= p <= 5 is not verified. p =" << p)
+		vtkErrorMacro ("vtkFrustumWidget::GetPlane : 0 <= p <= 5 is not verified. p =" << p);
 }	// vtkFrustumWidget::GetPlane
 
 
@@ -419,7 +419,7 @@ void vtkFrustumWidget::SetPlaneOrigin (SIDE p, double origin [3])
 		Update (planeWidget);
 	}	// if (0 != planeWidget)
 	else
-		vtkErrorMacro ("vtkFrustumWidget::SetPlane : 0 <= p <= 5 is not verified. p =" << p)
+		vtkErrorMacro ("vtkFrustumWidget::SetPlane : 0 <= p <= 5 is not verified. p =" << p);
 }	// vtkFrustumWidget::SetPlaneOrigin
 
 
@@ -429,7 +429,7 @@ void vtkFrustumWidget::GetPlaneOrigin (SIDE p, double origin [3])
 	if (0 != planeWidget)
 		planeWidget->GetOrigin (origin);
 	else
-		vtkErrorMacro ("vtkFrustumWidget::GetPlaneOrigin : 0 <= p <= 5 is not verified. p =" << p)
+		vtkErrorMacro ("vtkFrustumWidget::GetPlaneOrigin : 0 <= p <= 5 is not verified. p =" << p);
 }	// vtkFrustumWidget::GetPlaneOrigin
 
 
@@ -442,7 +442,7 @@ void vtkFrustumWidget::SetPlaneNormal (SIDE p, double normal [3])
 		Update (planeWidget);
 	}	// if (0 != planeWidget)
 	else
-		vtkErrorMacro ("vtkFrustumWidget::SetPlane : 0 <= p <= 5 is not verified. p =" << p)
+		vtkErrorMacro ("vtkFrustumWidget::SetPlane : 0 <= p <= 5 is not verified. p =" << p);
 }	// vtkFrustumWidget::SetPlaneNormal
 
 
@@ -452,7 +452,7 @@ void vtkFrustumWidget::GetPlaneNormal (SIDE p, double normal [3])
 	if (0 != planeWidget)
 		planeWidget->GetNormal (normal);
 	else
-		vtkErrorMacro ("vtkFrustumWidget::GetPlaneNormal : 0 <= p <= 5 is not verified. p =" << p)
+		vtkErrorMacro ("vtkFrustumWidget::GetPlaneNormal : 0 <= p <= 5 is not verified. p =" << p);
 }	// vtkFrustumWidget::GetPlaneNormal
 
 
@@ -467,7 +467,7 @@ void vtkFrustumWidget::SetInteractorColor (SIDE axis, double rgb [3])
 {
 	if ((axis >= _planeWidgets.size ( )) || (0 == _planeWidgets [axis]))
 	{
-		vtkErrorMacro ("vtkFrustumWidget::SetInteractorColor : 0 <= axis <= " << _planeWidgets.size ( ) << " is not verified. axis =" << axis)
+		vtkErrorMacro ("vtkFrustumWidget::SetInteractorColor : 0 <= axis <= " << _planeWidgets.size ( ) << " is not verified. axis =" << axis);
 		return;
 	}	// if ((axis >= _planeWidgets.size ( )) || (0 == _planeWidgets [axis]))
 
@@ -496,7 +496,7 @@ void vtkFrustumWidget::SetInteractorEnabled (SIDE p, bool enabled)
 	if (0 != planeWidget)
 		planeWidget->SetInteractorEnabled (enabled);
 	else
-		vtkErrorMacro ("vtkFrustumWidget::SetInteractorEnabled : 0 <= p <= 5 is not verified. p =" << p)
+		vtkErrorMacro ("vtkFrustumWidget::SetInteractorEnabled : 0 <= p <= 5 is not verified. p =" << p);
 }	// vtkFrustumWidget::SetInteractorEnabled
 
 
@@ -505,7 +505,9 @@ void vtkFrustumWidget::GetBounds (double bounds [6])
 	vtkPolyData*	frustum	= 0 == _frustum ? 0 : _frustum->GetOutput ( );
 
 	if (0 == frustum)
-		vtkErrorMacro ("vtkFrustumWidget::GetBounds : null frustum.")
+	{
+		vtkErrorMacro ("vtkFrustumWidget::GetBounds : null frustum.");
+	}
 	else
 	{
 		// frustum->GetBounds (bounds);
@@ -575,7 +577,9 @@ void vtkFrustumWidget::SetPlanes (vtkPlanes& planes)
 		Update (0);
 	}
 	else
-		vtkErrorMacro ("vtkFrustumWidget::SetPlane : 0 <= planes.GetNumberOfPlanes ( ) <= 5 is not verified. p =" << planes.GetNumberOfPlanes ( ))
+	{
+		vtkErrorMacro ("vtkFrustumWidget::SetPlane : 0 <= planes.GetNumberOfPlanes ( ) <= 5 is not verified. p =" << planes.GetNumberOfPlanes ( ));
+	}
 }	// vtkFrustumWidget::SetPlanes
 
 
@@ -601,7 +605,7 @@ void vtkFrustumWidget::AddParallelPlanes (SIDE p)
 		case TOP	: AddParallelPlanes (BOTTOM, TOP);	break;
 		case FRONT	:
 		case BACK	: AddParallelPlanes (FRONT, BACK);	break;
-		default		: vtkErrorMacro ("vtkFrustumWidget::AddParallelPlanes : 0 <= p <= 5 is not verified. p =" << p)
+		default		: vtkErrorMacro ("vtkFrustumWidget::AddParallelPlanes : 0 <= p <= 5 is not verified. p =" << p);
 	}	// switch (p)
 }	// vtkFrustumWidget::AddParallelPlanes
 
@@ -616,7 +620,7 @@ void vtkFrustumWidget::RemoveParallelPlanes (SIDE p)
 		case TOP	: RemoveParallelPlanes (BOTTOM, TOP);	break;
 		case FRONT	:
 		case BACK	: RemoveParallelPlanes (FRONT, BACK);	break;
-		default		: vtkErrorMacro ("vtkFrustumWidget::RemoveParallelPlanes : 0 <= p <= 5 is not verified. p =" << p)
+		default		: vtkErrorMacro ("vtkFrustumWidget::RemoveParallelPlanes : 0 <= p <= 5 is not verified. p =" << p);
 	}	// switch (p)
 }	// vtkFrustumWidget::RemoveParallelPlanes
 

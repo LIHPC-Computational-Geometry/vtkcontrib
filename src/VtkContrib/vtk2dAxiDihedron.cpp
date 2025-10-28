@@ -4,8 +4,6 @@
  *  @date    18/09/2019
  */
 
-#ifndef VTK_5
-
 #include "VtkContrib/vtk2dAxiDihedron.h"
 
 #include <vtkPolyDataMapper.h>
@@ -45,11 +43,7 @@ vtk2dAxiDihedron::vtk2dAxiDihedron ( )
 	GetZAxisArrowSource ( ).InvertOn ( );
 	if (0 != GetZAxisLabelActor ( ))
 		GetZAxisLabelActor ( )->AddPosition (1., -radius, -2.1);
-#ifndef VTK_5
 	zShaftCurveMapper->SetInputConnection (m_zShaftCurveSource->GetOutputPort ( ));
-#else	// VTK_5
-	zShaftCurveMapper->SetInput (m_zShaftCurveSource->GetOutput ( ));
-#endif	// VTK_5
 	zShaftCurveMapper->ScalarVisibilityOff ( );
 	m_zShaftActor->SetMapper (zShaftCurveMapper);
 	AddPart (m_zShaftActor);
@@ -64,11 +58,7 @@ vtk2dAxiDihedron::vtk2dAxiDihedron ( )
 				1., -radius, -GetZAxisArrowSource ( ).GetTipLength ( ) / 2.);
 	vtkPolyDataMapper*	zTipConeMapper	= vtkPolyDataMapper::New ( );
 	zTipConeMapper->ScalarVisibilityOff ( );
-#ifndef VTK_5
 	zTipConeMapper->SetInputConnection (m_zTipCurveSource->GetOutputPort ( ));
-#else	// VTK_5
-	zTipConeMapper->SetInput (m_zTipCurveSource->GetOutput ( ));
-#endif	// VTK_5
 	m_zTipActor	= vtkActor::New ( );
 	m_zTipActor->SetMapper (zTipConeMapper);
 	m_zTipActor->GetProperty ( )->SetColor (vtkTrihedron::zColor);
@@ -168,4 +158,3 @@ void vtk2dAxiDihedron::SetElevationColor (double r, double g, double b)
 		m_zTipActor->GetProperty ( )->SetColor (r, g, b);
 }	// vtk2dAxiDihedron::SetElevationColor
 
-#endif	// VTK_5

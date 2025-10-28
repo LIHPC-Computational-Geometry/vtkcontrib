@@ -71,19 +71,11 @@ vtkTrihedron::vtkTrihedron ( )
 	// Création de l'axe X
 	m_xAxisArrowSource->SetShaftResolution(ArrowResolution);
 	m_xAxisArrowSource->SetTipResolution(TipResolution);
-#ifndef VTK_5
 	xAxisMapper->SetInputConnection (m_xAxisArrowSource->GetOutputPort ( ));
-#else	// VTK_5
-	xAxisMapper->SetInput (m_xAxisArrowSource->GetOutput ( ));
-#endif	// VTK_5
 	xAxisMapper->ScalarVisibilityOff();
 	m_xAxisActor->SetMapper(xAxisMapper);
 	m_xVectorText->SetText("x");
-#ifndef VTK_5
 	xLabelMapper->SetInputConnection(m_xVectorText->GetOutputPort());
-#else	// VTK_5
-	xLabelMapper->SetInput(m_xVectorText->GetOutput());
-#endif	// VTK_5
 	m_xLabelActor->SetMapper(xLabelMapper);
 	m_xLabelActor->SetScale(0.4,0.4,0.4);
 	m_xLabelActor->AddPosition(1.1,0.0,0.0);
@@ -102,20 +94,12 @@ vtkTrihedron::vtkTrihedron ( )
 	// Création de l'axe Y
 	m_yAxisArrowSource->SetShaftResolution(ArrowResolution);
 	m_yAxisArrowSource->SetTipResolution(TipResolution);
-#ifndef VTK_5
 	yAxisMapper->SetInputConnection (m_yAxisArrowSource->GetOutputPort ( ));
-#else	// VTK_5
-	yAxisMapper->SetInput(m_yAxisArrowSource->GetOutput());
-#endif	// VTK_5
 	yAxisMapper->ScalarVisibilityOff();
 	m_yAxisActor->SetMapper(yAxisMapper);
 	m_yAxisActor->RotateZ(90);
 	m_yVectorText->SetText("y");
-#ifndef VTK_5
 	yLabelMapper->SetInputConnection(m_yVectorText->GetOutputPort());
-#else	// VTK_5
-	yLabelMapper->SetInput(m_yVectorText->GetOutput());
-#endif	// VTK_5
 	m_yLabelActor->SetMapper(yLabelMapper);
 	m_yLabelActor->SetScale(0.4,0.4,0.4);
 	m_yLabelActor->AddPosition(0.0,1.1,0.0);
@@ -134,20 +118,12 @@ vtkTrihedron::vtkTrihedron ( )
 	// Création de l'axe Z
 	m_zAxisArrowSource->SetShaftResolution(ArrowResolution);
 	m_zAxisArrowSource->SetTipResolution(TipResolution);
-#ifndef VTK_5
 	zAxisMapper->SetInputConnection (m_zAxisArrowSource->GetOutputPort ( ));
-#else	// VTK_5
-	zAxisMapper->SetInput(m_zAxisArrowSource->GetOutput());
-#endif	// VTK_5
 	zAxisMapper->ScalarVisibilityOff();
 	m_zAxisActor->SetMapper(zAxisMapper);
 	m_zAxisActor->RotateY(-90);
 	m_zVectorText->SetText("z");
-#ifndef VTK_5
 	zLabelMapper->SetInputConnection(m_zVectorText->GetOutputPort());
-#else	// VTK_5
-	zLabelMapper->SetInput(m_zVectorText->GetOutput());
-#endif	// VTK_5
 	m_zLabelActor->SetMapper(zLabelMapper);
 	m_zLabelActor->SetScale(0.4,0.4,0.4);
 	m_zLabelActor->AddPosition(0.0,0.0,1.1);

@@ -105,13 +105,9 @@ int main ( int argc, char *argv[] )
 
 	vtkUnstructuredGrid*	grid	= vtkUnstructuredGrid::New ( );
 	vtkDataSetMapper*		mapper	= vtkDataSetMapper::New ( );
-#ifndef VTK_5
 	mapper->SetInputData (grid);
-#else	// VTK_5
-	mapper->SetInput (grid);
-#endif	// VTK_5
 	mapper->ScalarVisibilityOff ( );
-#if defined(VTK5) || defined(VTK_7)	
+#ifdef VTK_7
 	mapper->SetImmediateModeRendering (false);
 #endif	
 	vtkActor*				actor	= vtkActor::New ( );

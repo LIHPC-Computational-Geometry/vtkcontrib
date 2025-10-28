@@ -4,8 +4,6 @@
  *  @date    18/09/2019
  */
 
-#ifndef VTK_5
-
 #ifndef VTK_2DAXI_DIHEDRON_H
 #define VTK_2DAXI_DIHEDRON_H
 
@@ -83,6 +81,5 @@ class vtk2dAxiDihedron : public vtkTrihedron
 	vtkConeSource*		m_zTipCurveSource;
 };	// class vtk2dAxiDihedron
 
-#endif	// VTK_5
 
 #endif	// VTK_2DAXI_DIHEDRON_H
