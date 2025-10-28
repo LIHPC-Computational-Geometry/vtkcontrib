@@ -36,33 +36,21 @@ vtkECMAxesActor::vtkECMAxesActor ( )
 	// Création de l'axe X
 	_xAxis->SetPoint1 (-1., 0., 0.);
 	_xAxis->SetPoint2 (1., 0., 0.);
-#ifndef VTK_5
 	xAxisMapper->SetInputConnection (_xAxis->GetOutputPort ( ));
-#else	// VTK_5
-	xAxisMapper->SetInput (_xAxis->GetOutput ( ));
-#endif	// VTK_5
 	xAxisMapper->ScalarVisibilityOff ( );
 	_xAxisActor->SetMapper (xAxisMapper);
 
 	// Création de l'axe Y
 	_yAxis->SetPoint1 (0., -1., 0.);
 	_yAxis->SetPoint2 (0., 1., 0.);
-#ifndef VTK_5
 	yAxisMapper->SetInputConnection (_yAxis->GetOutputPort ( ));
-#else	// VTK_5
-	yAxisMapper->SetInput (_yAxis->GetOutput ( ));
-#endif	// VTK_5
 	yAxisMapper->ScalarVisibilityOff ( );
 	_yAxisActor->SetMapper (yAxisMapper);
 
 	// Création de l'axe Z
 	_zAxis->SetPoint1 (0., 0., -1.);
 	_zAxis->SetPoint2 (0., 0., 1.);
-#ifndef VTK_5
 	zAxisMapper->SetInputConnection (_zAxis->GetOutputPort ( ));
-#else	// VTK_5
-	zAxisMapper->SetInput (_zAxis->GetOutput ( ));
-#endif	// VTK_5
 	zAxisMapper->ScalarVisibilityOff ();
 	_zAxisActor->SetMapper (zAxisMapper);
 

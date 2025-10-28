@@ -113,11 +113,7 @@ vtkKatAxisActor::vtkKatAxisActor()
 
   this->TitleVector = vtkVectorText::New();
   this->TitleMapper = vtkPolyDataMapper::New();
-#ifndef VTK_5
   this->TitleMapper->SetInputConnection (this->TitleVector->GetOutputPort());
-#else	// VTK_5
-  this->TitleMapper->SetInput(this->TitleVector->GetOutput());
-#endif	// VTK_5
   this->TitleActor = vtkFollower::New();
   this->TitleActor->SetMapper(this->TitleMapper);
   
@@ -129,11 +125,7 @@ vtkKatAxisActor::vtkKatAxisActor()
 
   this->Axis = vtkPolyData::New();
   this->AxisMapper = vtkPolyDataMapper::New();
-#ifndef VTK_5
   this->AxisMapper->SetInputData(this->Axis);
-#else	// VTK_5
-  this->AxisMapper->SetInput(this->Axis);
-#endif	// VTK_5
   this->AxisActor = vtkActor::New();
   this->AxisActor->SetMapper(this->AxisMapper);
   
@@ -1203,11 +1195,7 @@ vtkKatAxisActor::SetNumberOfLabels(const int numLabels)
     {
     this->LabelVectors[i] = vtkVectorText::New();
     this->LabelMappers[i] = vtkPolyDataMapper::New();
-#ifndef VTK_5
     this->LabelMappers[i]->SetInputConnection(this->LabelVectors[i]->GetOutputPort());
-#else	// VTK_5
-    this->LabelMappers[i]->SetInput(this->LabelVectors[i]->GetOutput());
-#endif	// VTK_5
     this->LabelActors[i] = vtkFollower::New();
     this->LabelActors[i]->SetMapper(this->LabelMappers[i]);
     }

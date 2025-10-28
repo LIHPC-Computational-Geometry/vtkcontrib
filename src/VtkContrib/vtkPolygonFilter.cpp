@@ -3,6 +3,10 @@
 #include <vtkDataSet.h>
 #include <vtkCellData.h>
 #include <vtkPointData.h>
+#include <vtkCellArray.h>
+#if VTK_MAJOR_VERSION >= 9
+#include <vtkCellArrayIterator.h>
+#endif	// VTK_MAJOR_VERSION >= 9
 #include <assert.h>
 
 #include <algorithm>
@@ -68,9 +72,23 @@ int vtkPolygonFilter::RequestData (vtkInformation* request, vtkInformationVector
 	output->Reset ( );
 
 	const size_t	cellNum	= cells->GetNumberOfCells ( );
-	vtkIdType*		cellsPtr	= cells->GetPointer ( );
 	output->SetPoints (pointSet);
 	output->Allocate (cellNum, cellNum);
+#ifdef VTK_CELL_ARRAY_V2	// defined in vtkCellArray.h	CP v 5.13.1 Portage VTK 9.3.0
+	vtkSmartPointer<vtkCellArrayIterator> cellIterator = vtk::TakeSmartPointer (cells->NewIterator ( ));
+	for (cellIterator->GoToFirstCell ( ); !cellIterator->IsDoneWithTraversal ( ); cellIterator->GoToNextCell ( ))
+	{
+		vtkIdType			nodeCount	= 0;
+		const vtkIdType*	ids			= 0;
+		cellIterator->GetCurrentCell (nodeCount, ids);
+		switch (nodeCount)
+		{
+			case 3		: output->InsertNextCell (VTK_TRIANGLE, nodeCount, ids);		break;
+			case 4		: output->InsertNextCell (VTK_QUAD, nodeCount, ids);			break;
+		}	// switch (nodeCount)
+	}	// for (cellIterator->GoToFirstCell ( ); !cellIterator->IsDoneWithTraversal ( ); cellIterator->GoToNextCell ( ))
+#else	// VTK_CELL_ARRAY_V2
+	vtkIdType*		cellsPtr	= cells->GetPointer ( );
 	for (int i = 0; i < cellNum; i++)
 	{
 		const vtkIdType nodeCount	= *cellsPtr;
@@ -82,6 +100,7 @@ int vtkPolygonFilter::RequestData (vtkInformation* request, vtkInformationVector
 		}	// switch (nodeCount)
 		cellsPtr	+= nodeCount;
 	}       // for (i = 0; i < cellNum; i++)
+#endif	// VTK_CELL_ARRAY_V2
 
 	output->GetCellData ( )->PassData (input->GetCellData ( ));
 	output->Squeeze ( );
