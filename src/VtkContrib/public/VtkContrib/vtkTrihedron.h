@@ -62,8 +62,7 @@ class vtkTrihedron : public vtkPropAssembly
 	 * 				En mode <I>2D off</I>, les positions sont relatives, chaque
 	 * 				axe mesurant 1.1, donc l'offset est à comparer à 1.
 	 */
-	virtual void SetLabelsOffsets (
-							double xOffset, double yOffset, double zOffset);
+	virtual void SetLabelsOffsets (double xOffset, double yOffset, double zOffset);
 
 	/**
 	 * @param		Redimensionne l'épaisseur des axes du facteur transmis en
@@ -100,6 +99,21 @@ class vtkTrihedron : public vtkPropAssembly
 	 * @param		Composantes RGB pour l'axe des élévations.
 	 */
 	virtual void SetElevationColor (double r, double g, double b);
+
+	/**
+	 * Rend les axes sensibles aux éclairages (Off par défaut).
+	 * @since		5.14.0
+	 */
+	virtual void LightingOn ( );
+	virtual void LightingOff ( );
+	virtual void SetLighting (int onOff);
+
+	/**
+	 * @return		1 si les axes sont sensibles aux éclairages, 0 dans le cas contraire.
+	 * @warning		Seul l'axe des abscisses est évalué.
+	 * @since		5.14.0
+	 */
+	virtual int GetLighting ( );
 
 	/**
 	 * Affiche les libellés dans le plan de la vue <I>true</I> ou dans
