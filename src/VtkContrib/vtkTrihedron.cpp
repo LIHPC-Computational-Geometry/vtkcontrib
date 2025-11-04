@@ -157,6 +157,8 @@ vtkTrihedron::vtkTrihedron ( )
 	SetAbscissaColor (xColor [0], xColor [1], xColor [2]);
 	SetOrdinateColor (yColor [0], yColor [1], yColor [2]);
 	SetElevationColor (zColor [0], zColor [1], zColor [2]);
+	
+	LightingOff ( );	// v 5.14.0
 }	// vtkTrihedron::vtkTrihedron
 
 
@@ -468,6 +470,45 @@ void vtkTrihedron::SetElevationColor (double r, double g, double b)
 	if (0 != m_zTextMapper)
 		m_zTextMapper->GetTextProperty ( )->SetColor (r, g, b);
 }	// vtkTrihedron::SetElevationColor
+
+
+void vtkTrihedron::LightingOn ( )
+{
+	if (0 != GetXAxisArrowActor ( ).GetProperty ( ))
+		GetXAxisArrowActor ( ).GetProperty ( )->LightingOn ( );
+	if (0 != GetYAxisArrowActor ( ).GetProperty ( ))
+		GetYAxisArrowActor ( ).GetProperty ( )->LightingOn ( );
+	if (0 != GetZAxisArrowActor ( ).GetProperty ( ))
+		GetZAxisArrowActor ( ).GetProperty ( )->LightingOn ( );
+}	// vtkTrihedron::LightingOn
+
+
+void vtkTrihedron::LightingOff ( )
+{
+	if (0 != GetXAxisArrowActor ( ).GetProperty ( ))
+		GetXAxisArrowActor ( ).GetProperty ( )->LightingOff ( );
+	if (0 != GetYAxisArrowActor ( ).GetProperty ( ))
+		GetYAxisArrowActor ( ).GetProperty ( )->LightingOff ( );
+	if (0 != GetZAxisArrowActor ( ).GetProperty ( ))
+		GetZAxisArrowActor ( ).GetProperty ( )->LightingOff ( );
+}	// vtkTrihedron::LightingOff
+
+
+void vtkTrihedron::SetLighting (int onOff)
+{
+	if (0 != GetXAxisArrowActor ( ).GetProperty ( ))
+		GetXAxisArrowActor ( ).GetProperty ( )->SetLighting (onOff);
+	if (0 != GetYAxisArrowActor ( ).GetProperty ( ))
+		GetYAxisArrowActor ( ).GetProperty ( )->SetLighting (onOff);
+	if (0 != GetZAxisArrowActor ( ).GetProperty ( ))
+		GetZAxisArrowActor ( ).GetProperty ( )->SetLighting (onOff);
+}	// vtkTrihedron::SetLighting
+
+
+int vtkTrihedron::GetLighting ( )
+{
+	return 0 == GetXAxisArrowActor ( ).GetProperty ( ) ? 0 : GetXAxisArrowActor ( ).GetProperty ( )->GetLighting ( );
+}	// vtkTrihedron::GetLighting
 
 
 void vtkTrihedron::SetLabel2D (bool on)
