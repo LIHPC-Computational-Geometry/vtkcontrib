@@ -5,7 +5,13 @@
 
 
 /**
- * Classe décrivant une ellipsoïde selon les axes Ox, Oy et Oz.
+ * <P>Classe décrivant une ellipsoïde selon les axes Ox, Oy et Oz.</P>
+ * 
+ * <P>Cette classe étant une <I>vtkImplicitFunction</I>, il convient d'en positionner et orienter les instances
+ * dans le repère cartésien (0, i, j, k) par transformation inverse avant d'utiliser ses fonctions Evaluate*.
+ * => Instancier une <I>vtkTransform</I> commençant par une translation vers 0 puis effectuant des rotations 
+ * selon Ox, Oy puis Oz que l'on lui affecte à l'instance via <I>SetTransform</I>.
+ * </P>
  */
 class vtkEllipsoid : public vtkImplicitFunction
 {

@@ -1,7 +1,7 @@
 /**
  * Widget de saisie d'une ellipsoïde dans l'espace.
  * @author		Charles PIGNEROL, CEA/DAM/DCLC
- * @date		09/12/2025
+ * @date		12/12/2025
  */
  
 #include "VtkContrib/vtkEllipsoidWidget.h"
@@ -12,6 +12,7 @@
 #include <vtkMath.h>
 #include <vtkProperty.h>
 #include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkSphereSource.h>
 #include <vtkTransform.h>
@@ -106,13 +107,14 @@ void vtkEllipsoidWidget::SetEnabled (int enabled)
 	{
 		if (0 != renderer)
 			renderer->RemoveActor (_ellipsoidActor);
+		if ((0 != GetInteractor ( )) && (0 != GetInteractor ( )->GetRenderWindow ( )))
+			GetInteractor ( )->GetRenderWindow ( )->Render ( );
 	}
 }	// vtkEllipsoidWidget::SetEnabled
 
 
 void vtkEllipsoidWidget::PlaceWidget (double bounds [6])
 {
-cout << __FILE__ << ' ' << __LINE__ << " vtkEllipsoidWidget::PlaceWidget" << endl;
 	vtkBoxWidget::PlaceWidget (bounds);
 	
 	UpdateEllipsoid ( );
@@ -121,7 +123,6 @@ cout << __FILE__ << ' ' << __LINE__ << " vtkEllipsoidWidget::PlaceWidget" << end
 
 void vtkEllipsoidWidget::PlaceWidget (double xRadius, double yRadius, double zRadius, vtkTransform* transform)
 {
-cout << __FILE__ << ' ' << __LINE__ << " vtkEllipsoidWidget::PlaceWidget" << endl;
 	const double	x	= 0 == transform ? 0. : transform->GetPosition ( )[0];
 	const double	y	= 0 == transform ? 0. : transform->GetPosition ( )[1];
 	const double	z	= 0 == transform ? 0. : transform->GetPosition ( )[2];
@@ -154,7 +155,6 @@ void vtkEllipsoidWidget::GetPosition (double& x, double& y, double& z)
 	x	= this->HandleGeometry [6]->GetCenter ( )[0];
 	y	= this->HandleGeometry [6]->GetCenter ( )[1];
 	z	= this->HandleGeometry [6]->GetCenter ( )[2];
-	cout << __FILE__ << ' ' << __LINE__ << " vtkEllipsoidWidget::GetPosition : " << x << ", " << y << ", " << z << endl;
 }	// vtkEllipsoidWidget::GetPosition
 
 
