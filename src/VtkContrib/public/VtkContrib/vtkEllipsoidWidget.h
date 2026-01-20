@@ -1,7 +1,7 @@
 /**
  * Widget de saisie d'une ellipsoïde dans l'espace.
  * @author		Charles PIGNEROL, CEA/DAM/DCLC
- * @date		09/12/2025
+ * @date		12/12/2025
  */
 
 #ifndef VTK_ELLIPSOID_WIDGET_H
