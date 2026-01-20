@@ -159,6 +159,9 @@ class vtkTrihedron : public vtkPropAssembly
 	vtkActor* GetXAxisLabelActor ( );
 	vtkActor* GetYAxisLabelActor ( );
 	vtkActor* GetZAxisLabelActor ( );
+	vtkActor2D* GetXAxisLabelActor2D ( );
+	vtkActor2D* GetYAxisLabelActor2D ( );
+	vtkActor2D* GetZAxisLabelActor2D ( );
 
 	/**
 	 * Couleur associée aux abscisses.

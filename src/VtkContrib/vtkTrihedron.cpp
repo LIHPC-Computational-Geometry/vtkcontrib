@@ -614,4 +614,19 @@ vtkActor* vtkTrihedron::GetZAxisLabelActor ( )
 };	// vtkTrihedron::GetZAxisLabelActor
 
 
+vtkActor2D* vtkTrihedron::GetXAxisLabelActor2D ( )
+{
+	return m_xLabelActor2D;
+};	// vtkTrihedron::GetXAxisLabelActor2D
 
+
+vtkActor2D* vtkTrihedron::GetYAxisLabelActor2D ( )
+{
+	return m_yLabelActor2D;
+};	// vtkTrihedron::GetYAxisLabelActor2D
+
+
+vtkActor2D* vtkTrihedron::GetZAxisLabelActor2D ( )
+{
+	return m_zLabelActor2D;
+};	// vtkTrihedron::GetZAxisLabelActor2D
