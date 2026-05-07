@@ -16,7 +16,7 @@ if (VTK_7)
 		set (VTK_PARALLEL_PACKAGES vtkParallelMPI vtkRenderingParallel vtkParallelCore)
 	endif (MPI_mpi_LIBRARY)
 	if (USE_OPENGL_BACKEND)
-		set (VTK_REQUIRED_PACKAGES vtkRenderingLOD vtkInteractionStyle vtkFiltersHybrid vtkFiltersExtraction vtkFiltersCore #
+		set (VTK_REQUIRED_PACKAGES vtkRenderingLOD vtkInteractionStyle vtkFiltersHybrid vtkFiltersExtraction vtkFiltersCore vtkCommonComputationalGeometry #
                                vtkCommonTransforms vtkCommonMath vtkInteractionWidgets vtkImagingHybrid vtkRenderingOpenGL #
                                vtkRenderingFreeType vtkRenderingLabel vtkFiltersImaging vtkRenderingGL2PS vtkIOImage vtkIOLegacy #
                                vtkIOExport vtkIOXML vtkIOCore vtkCommonExecutionModel vtkCommonDataModel vtkRenderingAnnotation #
