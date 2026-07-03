@@ -135,28 +135,37 @@ vtkTransform* vtkTransformHelper::CreateTransform (const vtkTransformHelper::vtk
 
 	if (true == memento.isExtrinsic)
 	{
-		if (false == memento.translationFirst)
-			transform->Translate (memento.dx, memento.dy, memento.dz);
-		transform->RotateY (memento.xoz);
-		transform->RotateX (memento.yoz);
-		transform->RotateZ (memento.xoy);
+		// Passage en mode PostMultiply pour le repère extrinsèque (global)
+		transform->PostMultiply ( );
+
+		// Application des transformations dans l'ordre exact de l'énoncé
 		if (true == memento.translationFirst)
+			transform->Translate (memento.dx, memento.dy, memento.dz);
+		
+		// Rotations autour de Oz, puis Oz, puis Oy :
+		transform->RotateZ (memento.xoy);
+		transform->RotateX (memento.yoz);
+		transform->RotateY (memento.xoz);
+
+		if (false == memento.translationFirst)
 			transform->Translate (memento.dx, memento.dy, memento.dz);
 	}	// if (true == memento.isExtrinsic)
 	else
 	{
+		// Passage en mode PreMultiply pour le repère intrinsèque (local)
+		transform->PreMultiply ( );
+
+		// Application des transformations dans l'ordre exact de l'énoncé
 		if (true == memento.translationFirst)
 			transform->Translate (memento.dx, memento.dy, memento.dz);
-		// RotateY(phi) → RotateZ(theta) → RotateX(omega) : chaque rotation s’applique dans le repère local courant, 
-        // méthode standard pour les angles de Tait-Bryan intrinsèques (ZYX) en robotique/aéronautique. Dixit mistral.ai.
-        // Pour ce il faut inverser l'ordre des rotations par rapport à la même transformation mais à repère constant
-        // (transformation extrinsèque).
-		transform->RotateX (memento.yoz);
-		transform->RotateZ (memento.xoy);
+
+		// Rotations autour de Oy, puis Oz, puis Ox :
 		transform->RotateY (memento.xoz);
+		transform->RotateZ (memento.xoy);
+		transform->RotateX (memento.yoz);
+
 		if (false == memento.translationFirst)
 			transform->Translate (memento.dx, memento.dy, memento.dz);
-		transform->PostMultiply ( );
 	}	// else if (true == memento.isExtrinsic)
 
 	return transform;

@@ -1,3 +1,9 @@
+Version 5.17.1 : 03/07/26
+================
+
+Classe vtkTransformHelper : correctif Pre/PostMultiply dans le cas des transformations intrinsèques.
+
+
 Version 5.17.0 : 24/03/26
 ================
 
