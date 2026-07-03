@@ -37,7 +37,7 @@ class vtkTransformHelper
 	 * Classe créée à la base pour pouvoir, à partir d'une instance de cette classe conservée par exemple dans une IHM, recréer une instance de 
 	 * vtkTransform à partir de la méthode vtkTransformHelper::CreateTransform (vtkSimpleTransformMemento).
 	 *
-	 * Une transformation intrinsèque est nue transformation géométrique qui est appliquée directement à un objet ou à un système de coordonnées
+	 * Une transformation intrinsèque est une transformation géométrique qui est appliquée directement à un objet ou à un système de coordonnées
 	 * dans son propre repère. Contrairement aux transformations extrinsèques, qui sont appliquées par rapport à un repère externe, les 
 	 * transformations intrinsèques modifient les propriétés internes de l'objet ou du repère lui-même (position, orientation, forme, taille).
 	 * 
@@ -62,7 +62,7 @@ class vtkTransformHelper
 		// Les éventuelles mises à l'échelle. Effectuées avant toute autre opération.
 		double	scaleX, scaleY, scaleZ;
 
-		// Paramétrage transformation extrinsèque :
+		// Paramétrage transformation extrinsèque/intrinsèque :
 		double	xoy, xoz, yoz;	// theta, phi, omega
 		double	dx, dy, dz;
 		bool	translationFirst;
