@@ -1,13 +1,14 @@
 set (CURRENT_PACKAGE_NAME "VtkContrib")
 set (CURRENT_PACKAGE_MACRO_NAME "VTK_CONTRIB")
 
-find_package (GUIToolkitsVariables)
+find_package (GUIToolkitsVariables 1.7 REQUIRED)
 find_package (OpenGL)	# Pour Spack 0.18.1
 
 include (${CMAKE_SOURCE_DIR}/cmake/version.cmake)
 include (${GUIToolkitsVariables_CMAKE_DIR}/common.cmake)
 include (${CMAKE_SOURCE_DIR}/cmake/vtkcontrib_common.cmake)
 include (${GUIToolkitsVariables_CMAKE_DIR}/workarounds.cmake)
+include (${GUIToolkitsVariables_CMAKE_DIR}/utilities.cmake)
 
 # Curieusement les dépendances semblent inexister avec cette version de VTK, ou ne sont pas bien prises en compte ...
 # => On ajoute MPI
@@ -117,6 +118,8 @@ endif (NOT ${PLATFORM} STREQUAL "Ubuntu")
 # Etre capable une fois installée de retrouver vtk*, ... :
 # (Rem : en son absence on a Set runtime path of "/tmp/pignerol/install/lib/libVtkContrib.so.5.0.0" to "") ...
 set_target_properties (VtkContrib PROPERTIES INSTALL_RPATH_USE_LINK_PATH 1)
+separate_debug_infos (VtkContrib ${CMAKE_INSTALL_PREFIX}/src)
+
 # Inefficace ici : CMAKE_AUTOMOC => dans le CMakeLists.txt racine
 #set (CMAKE_AUTOMOC ON)
 
